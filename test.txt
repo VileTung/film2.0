@@ -1,4 +1,0 @@
-DATETIME,ERRORLEVEL,TAG,VALUE,LINE,FILE\n"2014-11-18 11:59:09",INFO,/,test,16,/var/www/film2.0/test.php
-"2014-11-18 12:00:27",INFO,/,test,16,/var/www/film2.0/test.php
-"2014-11-18 12:01:12",ERROR,kevin,"inside an funckion",11,/var/www/film2.0/test.php
-"2014-11-18 12:01:12",INFO,/,test,19,/var/www/film2.0/test.php
