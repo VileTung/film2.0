@@ -18,7 +18,7 @@ class loggen
     private $header = "DATETIME,ERRORLEVEL,TAG,VALUE,LINE,FILE";
 	
 	//Default tag
-	const defaultTag = "/";
+	const defaultTag = "--";
 
     //Constructor
     public function __construct($file)
@@ -27,7 +27,7 @@ class loggen
     }
 
     //Write log file
-    private function writeLog($level = "INFO", $value, $tag)
+    private function writeLog($level = "INFO", $colorCLI = "\033[01;37m", $value, $tag)
     {
         //Current datetime
         $datetime = date("Y-m-d H:i:s");
@@ -68,33 +68,36 @@ class loggen
 		//Place it in the file
         fputcsv($openFile, $entry, $this->separator);
 
-		//And close the file
+		//Close the file
         fclose($openFile);
+		
+		//And finally, push it to the screen
+		print($colorCLI."[".$datetime."] ".$function."\033[0m: ".$value."\n");
     }
 	
 	//Function for simple information messages
 	function info($value, $tag = self::defaultTag) 
 	{	
-		self::writeLog("INFO", $value, $tag);
+		self::writeLog("INFO", "\033[01;37m", $value, $tag);
 	}
 	
 	//Function for warning messages
 	function warning($value, $tag = self::defaultTag) 
 	{	
-		self::writeLog("WARNING", $value, $tag);
+		self::writeLog("WARNING", "\033[01;33m", $value, $tag);
 	}
 
 
 	//Function for error messages
 	function error($value, $tag = self::defaultTag) 
 	{	
-		self::writeLog("ERROR", $value, $tag);
+		self::writeLog("ERROR", "\033[01;31m", $value, $tag);
 	}
 
 	//Function for debug messages
 	function debug($value, $tag = self::defaultTag) 
 	{	
-		self::writeLog("DEBUG", $value, $tag);
+		self::writeLog("DEBUG", "\033[01;32m", $value, $tag);
 	}
 }
 
