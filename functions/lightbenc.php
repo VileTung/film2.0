@@ -71,7 +71,7 @@ class lightbenc
     {
         if (is_array($d))
         {
-            //Nodig, anders krijgen we een warning
+            //Added, otherwise we'll see a warning
             $isDict = 0;
 
             $ret = "l";
@@ -98,7 +98,8 @@ class lightbenc
                 elseif (is_int($value))
                 {
                     $ret .= "i${value}e";
-                } else
+                }
+                else
                 {
                     $ret .= self::bencode($value);
                 }
@@ -113,27 +114,11 @@ class lightbenc
         elseif (is_int($d))
         {
             return "i${d}e";
-        } else
+        }
+        else
         {
             return null;
         }
-    }
-}
-
-function lightBenc($data, $method)
-{   
-    //Class call
-    $benc = new lightbenc;
-
-    //Decode
-    if ($method == "decode")
-    {
-        return $benc->bdecode($data);
-    }
-    //Encode
-    elseif ($method == "encode")
-    {
-        return $benc->bencode($data);
     }
 }
 

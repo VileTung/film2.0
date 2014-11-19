@@ -31,12 +31,15 @@ class torrent
         {
             throw new Exception("Invalid torrent-url (" . $url . ")");
         }
+		
+		//Start lightBenc
+		$lightBenc = new lightbenc;
 
         //Decode torrent
-        $decoded = lightBenc($content,"decode");
+        $decoded = $lightBenc->bdecode($content);
 
         //Calculate hash
-        $this->hash = sha1(lightBenc($decoded["info"],"encode"));
+        $this->hash = sha1($lightBenc->bencode($decoded["info"]));
 
         //Calculate filesize
         $this->movieSize = max($decoded["info"]["files"]);
@@ -47,7 +50,7 @@ class torrent
         //Now we add the other ones
         foreach ($decoded["announce-list"] as $trackers)
         {
-        	$trackerList[] = $trackers[0];
+            $trackerList[] = $trackers[0];
         }
 
         //Remove duplicates
@@ -118,10 +121,11 @@ class torrent
     }
 
     //Insert data
-    public function database($state = true, $name, $imdb, $quality, $retriever,$reliability)
+    public function database($state = true, $name, $imdb, $quality, $retriever, $reliability)
     {
-		var_dump($this->scrapedData); var_dump($this->hash);
-		
+        var_dump($this->scrapedData);
+        var_dump($this->hash);
+
         //Open database connection
         Database();
 

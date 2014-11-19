@@ -1,17 +1,23 @@
 <?php
 
 /**
-* @author Kevin
-* @copyright 2014
-* @info Bind functions together
-*/
+ * @author Kevin
+ * @copyright 2014
+ * @info Bind functions together
+ */
 
 header("Content-Type: text/html; charset=utf-8");
 
-//Guzzle locatie
+//Guzzle location
 $guzzle = "/home/Guzzle/vendor/autoload.php";
 
-//Guzzle laden
+//We need Guzzle/cURL
+if (!function_exists("curl_init") && !file_exists($guzzle))
+{
+    die("cURL en/of Guzzle zijn niet geïnstalleerd(!!)");
+}
+
+//Load Guzzle
 require_once ($guzzle);
 
 //Guzzle functies
@@ -19,43 +25,41 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Stream\Stream;
 
-//We zijn afhankelijk van cURL
-if (!function_exists("curl_init") && !file_exists($guzzle))
-{
-	die("cURL en/of Guzzle zijn niet geïnstalleerd(!!)");
-}
-
-//Variables for easy folders
-$root = dirname(dirname(__FILE__)) . "/";
-$functions = $root."functions/";
+//Variables for easy folder access
+$root = dirname(dirname(__file__)) . "/";
+$functions = $root . "functions/";
+$cache = $root . "cache/";
 
 //Load additional functions
-require_once($functions."scrape.php");
-require_once($functions."lightbenc.php");
-require_once($functions."torrent.php");
-require_once($functions."log.php");
-require_once($functions."sqlQuery.php");
+require_once ($functions . "cache.php");
+require_once ($functions . "imdb.php");
+require_once ($functions . "lightbenc.php");
+require_once ($functions . "log.php");
+require_once ($functions . "regex.php");
+require_once ($functions . "scrape.php");
+require_once ($functions . "sqlQuery.php");
+require_once ($functions . "torrent.php");
 
 //cURL
 function cURL($url)
 {
-	//Nodig voor Guzzle
-	$client = new Client();
+    //Guzzle client
+    $client = new Client();
 
-	try
-	{
-		//Proberen gegevens te halen
-		$request = $client->createRequest("GET", $url, ["timeout"=>60]);
-		$response = $client->send($request);
-		
-		//Gegevens terug sturen
-		return array(true, $response->getBody()->getContents());
-	}
-	catch (RequestException $e)
-	{
-		//Als het is mislukt, willen we weten waarom
-		return array(false, $e->getMessage());
-	}
+    try
+    {
+        //Try
+        $request = $client->createRequest("GET", $url, ["timeout" => 60]);
+        $response = $client->send($request);
+
+        //Return data
+        return array(true, $response->getBody()->getContents());
+    }
+    catch (RequestException $e)
+    {
+        //Failed, send information
+        return array(false, $e->getMessage());
+    }
 }
 
 ?>
