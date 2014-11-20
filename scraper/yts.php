@@ -13,6 +13,11 @@ class yts
 	//Constructor
 	public function __construct($startPage = 1, $endPage=200)
 	{
+		global $logging;
+		
+		//Message
+		$logging->info("Starting YTS (".$startPage." until ".$endPage.")");
+		
 		//The loop
 		for($i = $startPage; $i <= $endPage; $i++)
 		{
@@ -27,7 +32,7 @@ class yts
 				//Determine if done..
 				if(isset($data["status"]))
 				{
-					throw new Exception("No new data available (".$i.")");
+					throw new Exception("No new data available (".$i." of the ".$endPage.")");
 				}
 				
 				//Loop through movies
@@ -40,9 +45,15 @@ class yts
 					$scraper = new scraper($id);
 					$scraper->file($movie["TorrentUrl"],$movie["Quality"],"yts");
 					
+					//Message
+					$logging->info("YTS movie: ".$this->iMovie);
+					
 					//Movie counter
 					$this->iMovie++;
 				}
+				
+				//Message
+				$logging->info("YTS page: ".$i." (".$startPage." until ".$endPage.")");
 			}
 		}
 	}

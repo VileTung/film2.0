@@ -8,6 +8,9 @@
 
 class imdb
 {
+	//Movie exists?
+	private $movieExists;
+	
 	//Found IMDB info
 	private $foundData;
 	
@@ -17,13 +20,14 @@ class imdb
 	//Constructor
 	public function __construct()
 	{
-		
+		//Movie doesn't exist
+		$this->movieExists = false;
 	}
 
 	//Get info from IMDB
 	public function getInfo($id)
 	{
-		global $cache;
+		global $logging, $cache;
 		
 		//Save the ID
 		$this->imdbId = $id;
@@ -35,7 +39,11 @@ class imdb
 
 		if($rowCount>0)
 		{
-			throw new Exception("Movie already exists (".$id.")");
+			//Message
+			$logging->warning("Movie already exists (".$id.")");
+			
+			$this->movieExists = true;
+			return true;
 		}
 		//Continu
 		else
@@ -79,6 +87,10 @@ class imdb
 				
 				//This is what we need!
 				$this->foundData = array("title"=>$title,"description"=>$description,"runtime"=>$runtime,"rating"=>$rating,"releaseDate"=>$releaseDate,"genre"=>$genre,"poster"=>$poster,"posterBig"=>$posterBig);
+				
+				//Message
+				$logging->info("Movie found (".$title." - ".$id.")");
+				return true;				
 			}
 			//Failed(?)
 			else
@@ -91,7 +103,13 @@ class imdb
 	//Insert in DB
 	public function database()
 	{
-		global $poster;
+		global $logging, $poster;
+		
+		//If movie exists, we can stop
+		if($this->movieExists)
+		{
+			throw new Exception("Stopping, movie exists!");
+		}
 		
 		//We need to call 'getInfo' first..
 		if(!$this->foundData)
@@ -104,7 +122,8 @@ class imdb
 		//Does poster exist?
 		if(file_exists($poster.$this->imdbId.".jpg"))
 		{
-			//Message?
+			//Message
+			$logging->info("Poster exists (".$this->imdbId.")");
 		}
 		//Doesn't exist!
 		else
@@ -125,6 +144,9 @@ class imdb
 				//Poster can't be too large
 				if($widthBig>3000 || $heightBig>3000)
 				{
+					//Message
+					$logging->warning("Poster is too large (".$this->imdbId.")");
+					
 					//Get normal sized poster
 					$state = false;
 				}
@@ -138,7 +160,8 @@ class imdb
 			//Failed
 			else
 			{
-				//Message?
+				//Message
+				$logging->warning("Large poster failed (".$this->imdbId.")");
 			}
 			
 			//Failed, normal size poster..
@@ -191,10 +214,14 @@ class imdb
 
 				//Save poster
 				imagejpeg($image, $poster.$this->imdbId.".jpg", 100);
+				
+				//Message
+				$logging->info("Poster saved (".$this->imdbId.")");
 			}
 			else
 			{
 				//Message
+				$logging->error("Failed downloading poster (".$this->imdbId.")");
 			}
 		}
 		
@@ -207,7 +234,8 @@ class imdb
 			sqlQueryi("INSERT INTO `genres` (`imdb`,`genre`) VALUES (?,?)",array("ss",$this->imdbId,$genre));
 		}
 		
-		return array("status"=>"ok:movie_added '".$this->foundData["title"]."'");
+		//Message
+		$logging->info("Movie added (".$this->foundData["title"]." - ".$this->imdbId.")");
 	}
 }
 

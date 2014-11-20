@@ -30,6 +30,7 @@ $root = dirname(dirname(__file__)) . "/";
 
 $cache = $root . "cache/";
 $functions = $root . "functions/";
+$log = $root . "log/";
 $poster = $root . "poster/";
 $scraper = $root . "scraper/";
 

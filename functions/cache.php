@@ -8,7 +8,7 @@
 
 function cache($id,$url) 
 {
-	global $cache;
+	global $logging, $cache;
 	
 	//If cache exists
 	if(file_exists($cache.$id))
@@ -19,10 +19,16 @@ function cache($id,$url)
 		
 		//Must not be older than one month
 		if ($diff > (1440*7*4))
-		{		
+		{
+			//Message
+			$logging->info("Read cache (".$id.")");
+			
 			return file_get_contents($cache.$id);
 		}
 	}
+	
+	//Message
+	$logging->info("Get new cache (".$id.")");
 	
 	//Cache doesn't exist
 	list($state, $content) = cURL($url);
@@ -35,11 +41,17 @@ function cache($id,$url)
 		//OK
 		if($cacheState)
 		{
+			//Message
+			$logging->info("Cache saved (".$id.")");
+			
 			return $content;
 		}
 		//Failed
 		else
 		{
+			//Message
+			$logging->error("Couldn't save cache (".$id.")");
+			
 			return false;
 		}			
 	}

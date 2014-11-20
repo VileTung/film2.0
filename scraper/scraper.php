@@ -14,38 +14,51 @@ class scraper
 	//Constructor
 	public function __construct($id=false)
 	{
+		global $logging;
+		
 		if($id && is_numeric($id))
 		{
+			//Message
+			$logging->info("Set IMDB ID (".$id.")");
+			
 			$this->imdbId = $id;
 		}
 	}
 	
 	public function file($url, $quality, $retriever)
 	{
+		global $logging;
+		
 		try
 		{
-			print("Torrent\n");
+			//Message
+			$logging->info("Torrent");			
 			$torrent = new torrent;
 			$torrent->file($url);
 			
-			print("Scrape\n");
+			//Message
+			$logging->info("Scrape");			
 			$torrent->scrape();
 			
-			print("IMDB\n");
+			//Message
+			$logging->info("IMDB");			
 			$imdb = new imdb;
 			$imdb->getInfo($this->imdbId);
 			
-			print("Database 1\n");
+			//Message
+			$logging->info("Torrent DB");			
 			$torrent->database(true, $this->imdbId, $quality, $retriever, "0");
 			
-			print("Database 2\n");
+			//Message
+			$logging->info("Movie DB");
 			$imdb->database();
-			
-			print("Klaar\n");
 		}
 		catch(Exception $e)
 		{
-			print($e->getMessage());
+			//Message
+			$logging->error($e->getMessage());
 		}
+		
+		print("\n\n");
 	}
 }
