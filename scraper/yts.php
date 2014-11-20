@@ -8,7 +8,8 @@
 
 class yts
 {
-
+	public $iMovie = 0;
+	
 	//Constructor
 	public function __construct($startPage = 1, $endPage=200)
 	{
@@ -40,7 +41,7 @@ class yts
 					$scraper->file($movie["TorrentUrl"],$movie["Quality"],"yts");
 					
 					//Movie counter
-					$iMovie++;
+					$this->iMovie++;
 				}
 			}
 		}

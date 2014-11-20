@@ -14,15 +14,10 @@ class scraper
 	//Constructor
 	public function __construct($id=false)
 	{
-		var_dump($id);
-		
-		
 		if($id && is_numeric($id))
 		{
 			$this->imdbId = $id;
 		}
-		
-		var_dump($this->imdbId);
 	}
 	
 	public function file($url, $quality, $retriever)

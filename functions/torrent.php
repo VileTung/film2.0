@@ -130,9 +130,6 @@ class torrent
     //Insert data
     public function database($state = true, $imdb, $quality, $retriever, $reliability)
     {
-        var_dump($this->scrapedData);
-        var_dump($this->hash);
-
         //Open database connection
         Database();
 
@@ -150,16 +147,7 @@ class torrent
 
             //Torrent doesn't exist
             if (!$rowCount > 0)
-            {
-				var_dump($this->movieName);
-				var_dump($imdb);
-				var_dump($this->hash);
-				var_dump($this->movieSize);
-				var_dump($quality);
-				var_dump($retriever);
-				var_dump(date("Y-m-d H:i:s"));
-				var_dump($reliability);
-				
+            {				
                 //Insert data
                 sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`, `reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
                     "ssssssss",
