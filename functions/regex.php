@@ -35,7 +35,14 @@ class regex
 	//IMDB
 	public function imdb($regex,$string,$i=null,$ii=0)
 	{
-		//$return[""] = "";
+		$return["title"] = "~property='og:title' content=\"(.*)(?:\s*)\((?:.*)\)\"~Ui";
+		$return["originalTitle"] = "~<span class=\"title-extra\" itemprop=\"name\">(?:\s*)\"(.*)\"~Ui";
+		$return["plot"] = "~Storyline</h2>(?:\s*)<div class=\"inline canwrap\" itemprop=\"description\">(?:\s*)<p>(?:\s)(.*)(?:<em|<\/p>|<\/div>)~Ui";
+		$return["runtime"] = "~<time itemprop=\"duration\" datetime=\"(?:.*)\"(?:\s*)>(?:\s*)(.*)(?:min|</time>)~Uis";
+		$return["rating"] = "~<span itemprop=\"ratingValue\">(.*)</span>~Ui";
+		$return["releaseDate"] = "~Release Date:</h4>(.*)(?:\s*)(?:\(|<span|<\/div>)~Ui";
+		$return["genre"] = "~href=\"/genre/(.*)(?:\?.*)\"(?:\s*)>(.*)</a>~Ui";
+		$return["poster"] = "~\"(?:\s*)src=\"(.*)\"(?:\s*)itemprop=\"image\" \/>~Ui";
 		
 		return self::match($return[$regex],$string,$i,$ii);
 	}

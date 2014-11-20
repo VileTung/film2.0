@@ -16,6 +16,9 @@ class torrent
 
     //Save largest filesize
     private $movieSize;
+	
+	//Save the filename
+    private $movieName;
 
     //Scraped results
     private $scrapedData = array();
@@ -42,7 +45,11 @@ class torrent
         $this->hash = sha1($lightBenc->bencode($decoded["info"]));
 
         //Calculate filesize
-        $this->movieSize = max($decoded["info"]["files"]);
+        $movieInfo = max($decoded["info"]["files"]);
+        $this->movieSize = $movieInfo["length"];
+		
+		//Filename
+        $this->movieName = $movieInfo["path"][0];
 
         //There is only one tracker in this variable
         $trackerList = array($decoded["announce"]);
@@ -121,7 +128,7 @@ class torrent
     }
 
     //Insert data
-    public function database($state = true, $name, $imdb, $quality, $retriever, $reliability)
+    public function database($state = true, $imdb, $quality, $retriever, $reliability)
     {
         var_dump($this->scrapedData);
         var_dump($this->hash);
@@ -144,10 +151,19 @@ class torrent
             //Torrent doesn't exist
             if (!$rowCount > 0)
             {
+				var_dump($this->movieName);
+				var_dump($imdb);
+				var_dump($this->hash);
+				var_dump($this->movieSize);
+				var_dump($quality);
+				var_dump($retriever);
+				var_dump(date("Y-m-d H:i:s"));
+				var_dump($reliability);
+				
                 //Insert data
                 sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`, `reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
                     "ssssssss",
-                    $name,
+                    $this->movieName,
                     $imdb,
                     $this->hash,
                     $this->movieSize,

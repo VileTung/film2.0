@@ -79,9 +79,9 @@ function sqlQueryi($query, $parameters = false, $result = false)
         $return = array();
 
         //Data
-        while ($gegevens = $result->fetch_array(MYSQLI_ASSOC))
+        while ($data = $result->fetch_array(MYSQLI_ASSOC))
         {
-            $return[] = $gegevens;
+            $return[] = $data;
         }
 
         //Return

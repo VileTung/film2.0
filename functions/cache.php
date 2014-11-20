@@ -25,11 +25,11 @@ function cache($id,$url)
 	}
 	
 	//Cache doesn't exist
-	list($content, $state) = cURL($url);
+	list($state, $content) = cURL($url);
 	
 	//Save cache
 	if($state)
-	{		
+	{
 		$cacheState = file_put_contents($cache.$id, $content, LOCK_EX);
 		
 		//OK
@@ -44,3 +44,5 @@ function cache($id,$url)
 		}			
 	}
 }
+
+?>

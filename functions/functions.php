@@ -27,8 +27,11 @@ use GuzzleHttp\Stream\Stream;
 
 //Variables for easy folder access
 $root = dirname(dirname(__file__)) . "/";
-$functions = $root . "functions/";
+
 $cache = $root . "cache/";
+$functions = $root . "functions/";
+$poster = $root . "poster/";
+$scraper = $root . "scraper/";
 
 //Load additional functions
 require_once ($functions . "cache.php");
@@ -39,6 +42,10 @@ require_once ($functions . "regex.php");
 require_once ($functions . "scrape.php");
 require_once ($functions . "sqlQuery.php");
 require_once ($functions . "torrent.php");
+
+//Scrapers
+require_once ($scraper . "scraper.php");
+require_once ($scraper . "yts.php");
 
 //cURL
 function cURL($url)
