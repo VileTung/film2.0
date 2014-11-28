@@ -167,8 +167,11 @@ class imdb
 			//Failed, normal size poster..
 			if(!$state)
 			{
+				//Message
+				$logging->info("Fetching normal size poster (".$this->imdbId.")");
+				
 				//Get poster
-				list($content, $state) = cURL($this->foundData["poster"]);
+				list($state, $content) = cURL($this->foundData["poster"]);
 				
 				if($state)
 				{
@@ -182,6 +185,11 @@ class imdb
 					$file = fopen($poster.$this->imdbId.".jpg","x");
 					fwrite($file, $content);
 					fclose($file);
+				}
+				else
+				{
+					//Message
+					$logging->error("Normal poster failed (".$this->imdbId.")");
 				}
 			}
 			
