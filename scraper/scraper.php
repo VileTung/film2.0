@@ -30,7 +30,7 @@ class scraper
 		global $logging;
 		
 		try
-		{
+		{			
 			//Message
 			$logging->info("Torrent");			
 			$torrent = new torrent;
@@ -59,6 +59,6 @@ class scraper
 			$logging->error($e->getMessage());
 		}
 		
-		print("\n\n");
+		print("\n");
 	}
 }

@@ -38,6 +38,7 @@ $scraper = $root . "scraper/";
 require_once ($functions . "cache.php");
 require_once ($functions . "imdb.php");
 require_once ($functions . "lightbenc.php");
+require_once ($functions . "lock.php");
 require_once ($functions . "log.php");
 require_once ($functions . "regex.php");
 require_once ($functions . "scrape.php");

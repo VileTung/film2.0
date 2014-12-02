@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 	
 //require_once("functies/log.php");
@@ -64,14 +65,47 @@ $imdb->getInfo("1355630");
 var_dump($imdb->database());
 } catch(Exception $e) {
     print($e->getMessage());
-}*/
+}
+	
+	$test = new locker("123456");
+	
+	var_dump($test);
+	
+	die();exit();
+	
+	
+	try{
+	
+$logging = new loggen($log."test.txt");
+	
+	//Message
+	$logging->info("IMDB");			
+	$imdb = new imdb;
+	$imdb->getInfo("1811371");
+					
+	//Message
+	$logging->info("Movie DB");
+	$imdb->database();
+} catch(Exception $e) {
+    print($e->getMessage());
+}
+	
+	
+	die(); exit();*/
+	
+	
+	
 	
 	
 try{
 	
+	$locker = new locker();
 	$logging = new loggen($log."test.txt");
 	
-$yts = new yts(0,0);
+	$yts = new yts(0,0);
+	
+	$locker->stop();
+
 } catch(Exception $e) {
-    print($e->getMessage());
+    $logging->error($e->getMessage());
 }

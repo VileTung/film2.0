@@ -3,50 +3,64 @@
 /**
 * @author Kevin
 * @copyright 2014
-* @info Regex
+* @info Locks a session, also makes it stoppable
 */
 
-//Regex functions we need
-class regex
+class locker
 {
-	//Simple function
-	public function match($regex,$string,$i=null,$ii=0)
+	private $session;
+	
+	//Constructor
+	public function __construct()
 	{
-		preg_match_all($regex, $string, $matches);
+		global $cache;
 		
-		if($i!=null)
+		//Generate session ID
+		$this->session = $session = mt_rand(10000,65535);
+		
+		//Create lock file
+		$sessionFile = fopen($cache."lock_".$session, "w");
+		fclose($sessionFile);
+		
+		//Make sure everything went OK
+		if(!file_exists($cache."lock_".$session))
 		{
-			return (isset($matches[$i][$ii]) ? $matches[$i][$ii]:false);
+			throw new Exception("Couldn't create a lock!");
+		}
+	}
+	
+	//Get session ID, don't know why..
+	public function getSession()
+	{
+		return $this->session;
+	}
+	
+	//Check if session.lock still exists, otherwise, exit!
+	public function check()
+	{
+		global $logging, $cache;
+		
+		if(!file_exists($cache."lock_".$this->session))
+		{
+			throw new Exception("Stopping, ".$this->session.".lock doesn't exist");
 		}
 		else
 		{
-			return $matches;
+			//Message
+			$logging->debug("Process continues (".$this->session.")");
 		}
 	}
 	
-	//Main
-	public function main($regex,$string,$i=null,$ii=0)
+	//Regular exit
+	public function stop()
 	{
-		$return["year"] = "~(\b(19\d{2}|20[01]\d)\b)~i";
+		global $logging, $cache;
 		
-		return self::match($return[$regex],$string,$i,$ii);
-	}
-	
-	//IMDB
-	public function imdb($regex,$string,$i=null,$ii=0)
-	{
-		$return["title"] = "~property='og:title' content=\"(.*)(?:\s*)\((?:.*)\)\"~Ui";
-		$return["originalTitle"] = "~<span class=\"title-extra\" itemprop=\"name\">(?:\s*)\"(.*)\"~Ui";
-		$return["plot"] = "~Storyline</h2>(?:\s*)<div class=\"inline canwrap\" itemprop=\"description\">(?:\s*)<p>(?:\s)(.*)(?:<em|<\/p>|<\/div>)~Ui";
-		$return["runtime"] = "~<time itemprop=\"duration\" datetime=\"(?:.*)\"(?:\s*)>(?:\s*)(.*)(?:min|</time>)~Uis";
-		$return["rating"] = "~<span itemprop=\"ratingValue\">(.*)</span>~Ui";
-		$return["releaseDate"] = "~Release Date:</h4>(.*)(?:\s*)(?:\(|<span|<\/div>)~Ui";
-		$return["genre"] = "~href=\"/genre/(.*)(?:\?.*)\"(?:\s*)>(.*)</a>~Ui";
-		$return["poster"] = "~\"(?:\s*)src=\"(.*)\"(?:\s*)itemprop=\"image\" \/>~Ui";
+		unlink($cache."lock_".$this->session);
 		
-		return self::match($return[$regex],$string,$i,$ii);
+		//Message
+		$logging->info("Process stopped (".$this->session.")");
 	}
-	
 }
 
 ?>
