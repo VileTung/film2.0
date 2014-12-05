@@ -6,161 +6,303 @@
 * @info Web interface
 */
 
-require("./../functions/sqlQuery.php");
+//Debug
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once("bTemplate.php");
+require_once("./../functions/sqlQuery.php");
+
+//Template
+$bTemplate = new bTemplate();
 
 //Make the connection
 Database();
 
-list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS rows FROM imdb", false, true);
+//Default
+$pType = "";
+$pValue = array();
+$query = "";
+$url = array();
+$whereAnd = "WHERE";
 
-?>
+//Genre
+if(!empty($_GET["genre"]))
+{
+	$pType .= "s";
+	$pValue[] = $_GET["genre"];
+	
+	$query .= " INNER JOIN `genres` ON `imdb`.`imdb`=`genres`.`imdb` WHERE `genres`.`genre` = ?";
+	
+	$url["genre"] = $_GET["genre"];
+	
+	$whereAnd = "AND";
+}
 
-<!DOCTYPE html>
-<html lang="en">
+//Search
+if(!empty($_GET["title"]))
+{
+	$pType .= "s";
+	$pValue[] = "%".$_GET["title"]."%";
+	
+	$query .= " ".$whereAnd." `imdb`.`title` LIKE ? ";
+	
+	$url["title"] = $_GET["title"];
+}
 
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Film2.0 - Just watch!</title>
+//Order
+if(!empty($_GET["sort"]))
+{
+	//SQL safe, sort
+	switch ($_GET["sort"]) {
+	case "added":
+		$sort = "added";
+		break;
+	case "imdb":
+		$sort = "imdb";
+		break;
+	case "rating":
+		$sort = "rating";
+		break;
+	case "ratio":
+		//$sort = ""; //Not yet working!
+		break;
+	case "release":
+		$sort = "release";
+		break;
+	case "runtime":
+		$sort = "runtime";
+		break;
+	case "title":
+		$sort = "title";
+		break;
+	default:
+		$sort = "release";
+		break;
+	}
+	
+	//Sort order
+	if(isset($_GET["by"]) && $_GET["by"]=="DESC")
+	{
+		$by = "DESC";
+	}
+	else
+	{
+		$by = "ASC";
+	}
+	
+	//SQL Query
+	$query .= " ORDER BY `imdb`.`".$sort."` ".$by;
+	
+	$url["sort"] = $_GET["sort"];
+	$url["by"] = $by;
+}
 
-	<!-- Bootstrap -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+//Make list for 'sort'
+$sort = $url;
+unset($sort["sort"]);
 
-	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
+//Make list for genre
+$genre = $url;
+unset($genre["genre"]);
 
-<body>
 
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">Home</a>
-			</div>
-			<div id="navbar" class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Populair</a></li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sort <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">Added</a></li>
-							<li><a href="#">IMDB</a></li>
-							<li><a href="#">Rating</a></li>
-							<li><a href="#">Ratio</a></li>
-							<li><a href="#">Release</a></li>
-							<li><a href="#">Runtime</a></li>
-							<li><a href="#">Title</a></li>
-						</ul>
-					</li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Genre <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">Action</a></li>
-							<li><a href="#">Adventure</a></li>
-							<li><a href="#">Comedy</a></li>
-							<li><a href="#">Crime</a></li>
-							<li><a href="#">Documentary</a></li>
-							<li><a href="#">Drama</a></li>
-							<li><a href="#">Family</a></li>
-							<li><a href="#">Fantasy</a></li>
-							<li><a href="#">History</a></li>
-							<li><a href="#">Horror</a></li>
-							<li><a href="#">Music</a></li>
-							<li><a href="#">Musical</a></li>
-							<li><a href="#">Mystery</a></li>
-							<li><a href="#">Romance</a></li>
-							<li><a href="#">Sci-Fi</a></li>
-							<li><a href="#">Sport</a></li>
-							<li><a href="#">Thriller</a></li>
-							<li><a href="#">War</a></li>
-							<li><a href="#">Western</a></li>
-						</ul>
-					</li>
-					<li><a href="#">Admin</a></li>
-				</ul>
-				<form class="navbar-form navbar-right" role="form">
-					<div class="form-group">
-						<input type="text" placeholder="Movie title" class="form-control">
-					</div>
-					<button type="submit" class="btn btn-success">Search</button>
-				</form>
-			</div>
-			<!--/.navbar-collapse -->
-		</div>
-	</nav>
+//Bind parameters
+if(count($pValue)>0)
+{
+	$parameters = array_merge(array($pType),$pValue);
+}
+else
+{
+	$parameters = false;
+}
 
-	<div class="container theme-showcase" style="padding:40px;" role="main">
+//Count rows from MySQL
+list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS `rows` FROM `imdb` ".$query, $parameters, true);
 
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="js/jquery-1.11.1.min.js"></script>
-		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="js/bootstrap.min.js"></script>
-		<!-- FitText, needed for responsive titles -->
-		<script src="js/jquery.fittext.js"></script>
 
-		<div class="page-header">
-			<h1>Film2.0 - Just watch!</h1>
-		</div>
-		<div class="row">
+
+function humanFilesize($bytes, $decimals = 2) 
+{
+	$sz = "BKMGTP";
+	$factor = floor((strlen($bytes) - 1) / 3);
+	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
+
+//Generate URL
+function createURL($type,$sort,$textG,$get,$extra,$upDown=true)
+{
+	global $bTemplate;
+	
+	//Check if there are any parameters
+	if(count($sort)>0)
+	{
+		$url = $sort;
 		
-		<?php
-		
-		//Calculate how many movies
-		$movieCount = ceil($resultRows[0]["rows"]/6);
-		
-		//Limit total count to 60, for now..
-		if($movieCount>10)
+		if(isset($_GET[$get]) && $_GET[$get]==$type)
 		{
-			$movieCount = 10;
+			//No sort
+			if(!$upDown)
+			{
+				$text = $textG;
+				$class = "class=\"active\"";
+			}
+			//Sort
+			elseif(isset($sort["by"]) && $sort["by"]=="ASC")
+			{
+				$url["by"]="DESC";
+				$text = $textG." &#8595;";
+				$class = "class=\"active\"";
+			}
+			elseif(isset($sort["by"]) && $sort["by"]=="DESC")
+			{
+				$url["by"]="ASC";
+				$text = $textG." &#8593;";
+				$class = "class=\"active\"";
+			}
+		}
+		else
+		{
+			$text = $textG;
+			$class = "";
 		}
 		
-		for($i=0;$i<=$movieCount;$i++)
+		$url = "?".http_build_query($url)."&".$get."=".$type;
+	}
+	else
+	{
+		$url = "?".$get."=".$type;
+		$text = $textG;
+		$class = "";
+	}
+	
+	//Template
+	$bTemplate->set("url".$extra, $url);
+	$bTemplate->set("text".$extra, $text);
+	$bTemplate->set("class".$extra, $class);
+}
+
+//Create URL for sorting
+createURL("added",$sort,"Added","sort","SA");
+createURL("imdb",$sort,"IMDB","sort","SI");
+createURL("rating",$sort,"Rating","sort","SRa");
+createURL("release",$sort,"Release","sort","SRe");
+createURL("runtime",$sort,"Runtime","sort","SRu");
+createURL("title",$sort,"Title","sort","ST");
+
+//Create URL for genres
+createURL("action",$genre,"Action","genre","GAc",false);
+createURL("adventure",$genre,"Adventure","genre","GAd",false);
+createURL("comedy",$genre,"Comedy","genre","GCo",false);
+createURL("crime",$genre,"Crime","genre","GCr",false);
+createURL("documentary",$genre,"Documentary","genre","GDo",false);
+createURL("drama",$genre,"Drama","genre","GDr",false);
+createURL("family",$genre,"Family","genre","GFam",false);
+createURL("fantasy",$genre,"Fantasy","genre","GFan",false);
+createURL("history",$genre,"History","genre","GHi",false);
+createURL("horror",$genre,"Horror","genre","GHo",false);
+createURL("music",$genre,"Music","genre","GMusic",false);
+createURL("musical",$genre,"Musical","genre","GMusica",false);
+createURL("mystery",$genre,"Mystery","genre","GMy",false);
+createURL("romance",$genre,"Romance","genre","GR",false);
+createURL("sci-Fi",$genre,"Sci-Fi","genre","GSc",false);
+createURL("sport",$genre,"Sport","genre","GSp",false);
+createURL("thriller",$genre,"Thriller","genre","GT",false);
+createURL("war",$genre,"War","genre","GWa",false);
+createURL("western",$genre,"Western","genre","GWe",false);
+
+//Calculate how many movies
+$movieCount = ceil($resultRows[0]["rows"]/6);
+
+//Limit total count to 60, for now..
+if($movieCount>10)
+{		
+	$movieCount = 10;
+}
+
+$total = array();
+
+for($i=0;$i<=$movieCount;$i++)
+{
+	//Get movies
+	list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` ".$query." LIMIT ".($i*6).",6", $parameters, true);
+	
+	foreach($result as $key=>$fetch)
+	{
+		//Title too long
+		if(strlen($fetch["title"])>18)
 		{
-			//Get movies
-			list($rowCount, $result) = sqlQueryi("SELECT * FROM imdb LIMIT ".($i*6).",6", false, true);
-			
-			foreach($result as $key=>$fetch)
-			{
-				//Title too long
-				if(strlen($fetch["title"])>18)
-				{
-					$title = substr($fetch["title"], 0, 16)."..";
-				}
-				//Don't change
-				else
-				{
-					$title = $fetch["title"];
-				}
-
-				print("<div class=\"col-xs-6 col-sm-4 col-md-3 col-lg-2\">");
-					print("<div class=\"panel panel-default\">");
-						print("<div class=\"panel-heading\" style=\"width: 100%\">");
-							print("<h6 id=\"fitText-".$fetch["imdb"]."\" class=\"panel-title\" title=\"".$fetch["title"]." (".date("Y",strtotime($fetch["release"])).")\" style=\"font-size: 0.8em;\">".$title."</h6>");
-						print("</div>");
-						print("<div class=\"panel-body\" title=\"".$fetch["title"]." (".date("Y",strtotime($fetch["release"])).")\" style=\"background: url('./../poster/".$fetch["imdb"].".jpg') no-repeat center; height: 250px\">");
-						print("</div>");
-					print("</div>");
-				print("</div>");
-				
-				print("<script type=\"text/javascript\">$(\"#fitText-".$fetch["imdb"]."\").fitText();</script>");
-			}
-		} 
+			$title = substr($fetch["title"], 0, 16)."..";
+		}
+		//Don't change
+		else
+		{
+			$title = $fetch["title"];
+		}
 		
-		?>
+		//Get all genres
+		list($rowCountG, $resultG) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s",$fetch["imdb"]), true);
+		
+		$genres = "";
+		
+		foreach($resultG as $key=>$value)
+		{		
+			$genres .= $value["genre"].", ";
+		}
+		
+		//Get all torrents
+		list($rowCountT, $resultT) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s",$fetch["imdb"]), true);
+		
+		$torrents = array();
+		
+		foreach($resultT as $key=>$valueT)
+		{	
+			//Get all trackers
+			list($rowCountTr, $resultTr) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s",$valueT["hash"]), true);
 			
-		</div>
-	</div>
-</body>
+			$avg = "";
+			$iT=0;
+			$leechers = "";
+			$trackersURL = "magnet:?xt=urn:btih:".$valueT["hash"]."&dn=".urlencode($fetch["title"]);
+			
+			foreach($resultTr as $key=>$value)
+			{
+				if($value["seeders"]>0 && $value["leechers"]>0)
+				{
+					$avg += $value["seeders"]/$value["leechers"];
+					
+					$iT++;
+					
+					
+				}
+				
+				$trackersURL .= "&tr=".urlencode($value["tracker"]);
+			}
+					
+			//Calculate state
+			if(($avg/$iT)>2)
+			{
+				$state="Good";
+			}
+			elseif(($avg/$iT)>=1)
+			{
+				$state="OK";
+			}
+			else
+			{
+				$state = "Bad";
+			}
+			
+			$torrents[] = array("url"=>$trackersURL,"size"=> humanFilesize($valueT["size"]), "quality"=>$valueT["quality"], "state"=>$state);
+			
+			
+		}
+		
+		$total[] = array("imdb"=> $fetch["imdb"], "title" => $title, "titleOriginal" => $fetch["title"], "date" => "(".date("Y",strtotime($fetch["release"])).")", "description" => $fetch["description"], "runtime" => $fetch["runtime"], "genres" => $genres, "rating" => $fetch["rating"], "torrents"=>$torrents);
+	}
+}
 
-</html>
+$bTemplate->set("movies", $total);
+
+//Print the template!
+print($bTemplate->fetch("index.tpl"));
