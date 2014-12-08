@@ -11,6 +11,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once ("bTemplate.php");
+require_once ("pager.php");
 require_once ("./../functions/sqlQuery.php");
 
 class index
@@ -50,6 +51,7 @@ class index
         //URL
         $this->newURL["genre"] = $genre;
 
+		//Part of SQL
         $this->whereAnd = "AND";
     }
 
@@ -63,7 +65,22 @@ class index
 
         //URL
         $this->newURL["title"] = $title;
+		
+		//Part of SQL
+		$this->whereAnd = "AND";
     }
+	
+	private function pager($page)
+	{
+		//SQL
+        //$this->type .= "s";
+        //$this->value[] = $page;
+
+        //$this->query .= " " . $this->whereAnd . " `imdb`.`title` LIKE ? ";
+
+        //URL
+        $this->newURL["page"] = $page;
+	}
 
     private function sorting($sort)
     {
@@ -89,7 +106,7 @@ class index
         //Check if there are any parameters
         if (count($sort) > 0)
         {
-            $this->newURL = $sort;
+            $URL = $sort;
 
             if (isset($_GET[$get]) && $_GET[$get] == $type)
             {
@@ -119,17 +136,17 @@ class index
                 $class = "";
             }
 
-            $this->newURL = "?" . http_build_query($this->newURL) . "&" . $get . "=" . $type;
+            $URL = "?" . http_build_query($URL) . "&" . $get . "=" . $type;
         }
         else
         {
-            $this->newURL = "?" . $get . "=" . $type;
+            $URL = "?" . $get . "=" . $type;
             $text = $textG;
             $class = "";
         }
 
         //Template
-        $this->bTemplate->set("url" . $extra, $this->newURL);
+        $this->bTemplate->set("url" . $extra, $URL);
         $this->bTemplate->set("text" . $extra, $text);
         $this->bTemplate->set("class" . $extra, $class);
     }
@@ -154,12 +171,18 @@ class index
 
     public function show()
     {
-        //Genre
+        //Page
+        if (!empty($_GET["page"]))
+        {
+            $this->newURL["page"]=$_GET["page"];
+        }
+		
+		//Genre
         if (!empty($_GET["genre"]))
         {
             self::genre($_GET["genre"]);
         }
-
+		
         //Search
         if (!empty($_GET["title"]))
         {
@@ -208,7 +231,7 @@ class index
         self::URL("thriller", $this->genreURL, "Thriller", "genre", "GT", false);
         self::URL("war", $this->genreURL, "War", "genre", "GWa", false);
         self::URL("western", $this->genreURL, "Western", "genre", "GWe", false);
-
+		
         //Bind parameters
         if (count($this->value) > 0)
         {
@@ -224,20 +247,31 @@ class index
 
         //Calculate how many movies
         $movieCount = ceil($resultRows[0]["rows"] / 6);
+        $pageCount = ceil($resultRows[0]["rows"] / 30);
 
         //Limit total count to 60, for now..
-        if ($movieCount > 10)
+        if ($movieCount > 6)
         {
-            $movieCount = 10;
+            $movieCount = 6;
         }
-
+		
+		//Necessary for the pager
+		if(isset($_GET["page"]) && $_GET["page"]!=1)
+		{
+			$extra = ($movieCount) * 5;
+		}
+		else
+		{
+			$extra = 0;
+		}
+		
         //Total
         $total = array();
 
-        for ($i = 0; $i <= $movieCount; $i++)
-        {
+        for ($i = 0; $i <= $movieCount-1; $i++)
+        {			
             //Get movies
-            list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 6) . ",6", $parameters, true);
+            list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 5 + $extra) . ",5", $parameters, true);
 
             foreach ($result as $key => $fetch)
             {
@@ -322,9 +356,47 @@ class index
                     "torrents" => $torrents);
             }
         }
-
+		
+		//Set the movies
         $this->bTemplate->set("movies", $total);
+		
+		//URL for title search
+		if(isset($this->newURL["genre"]))
+		{
+			$this->bTemplate->set('genre', true, true);
+			$this->bTemplate->set("genreURL",$this->newURL["genre"]);
+		}
+		else
+		{
+			$this->bTemplate->set('genre', false, true);
+		}
+		
+		if(isset($this->newURL["sort"]))
+		{
+			$this->bTemplate->set('sort', true, true);
+			$this->bTemplate->set("sortURL",$this->newURL["sort"]);
+		}
+		else
+		{
+			$this->bTemplate->set('sort', false, true);
+		}
+		
+		if(isset($this->newURL["by"]))
+		{
+			$this->bTemplate->set('by', true, true);
+			$this->bTemplate->set("byURL",$this->newURL["by"]);
+		}
+		else
+		{
+			$this->bTemplate->set('by', false, true);
+		}
+		
+		//Pager
+		$pager = new pager($pageCount, $this->newURL);
+		$navigation = $pager->navigation();
 
+        $this->bTemplate->set("navigation", $navigation);
+		
         //Print the template!
         print ($this->bTemplate->fetch("index.tpl"));
     }

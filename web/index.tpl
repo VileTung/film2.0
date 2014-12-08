@@ -177,6 +177,15 @@
 				</ul>
 				<form class="navbar-form navbar-right" role="form" method="get" action="">
 					<div class="form-group">
+						<if:genre>
+							<input type="hidden" name="genre" value="<tag:genreURL />">
+						</if:genre>
+						<if:sort>
+							<input type="hidden" name="sort" value="<tag:sortURL />">
+						</if:sort>
+						<if:by>
+							<input type="hidden" name="by" value="<tag:byURL />">
+						</if:by>
 						<input type="text" name="title" placeholder="Movie title" class="form-control">
 					</div>
 					<button type="submit" class="btn btn-success">Search</button>
@@ -240,17 +249,24 @@
 											</thead>
 											<tbody>
 												<loop:movies[].torrents>
-												<tr>
-													<td><a href="<tag:movies[].torrents[].url />" title="Get Magnetlink">Get</a></td>
-													<td><tag:movies[].torrents[].quality /></td>
-													<td><tag:movies[].torrents[].size /></td>
-													<td><tag:movies[].torrents[].state /></td>
-												</tr>
+													<tr>
+														<td><a href="<tag:movies[].torrents[].url />" title="Get Magnetlink">Get</a>
+														</td>
+														<td>
+															<tag:movies[].torrents[].quality />
+														</td>
+														<td>
+															<tag:movies[].torrents[].size />
+														</td>
+														<td>
+															<tag:movies[].torrents[].state />
+														</td>
+													</tr>
 												</loop:movies[].torrents>
 											</tbody>
 										</table>
 									</div>
-									
+
 								</div>
 							</div>
 							<div class="modal-footer">
@@ -261,6 +277,15 @@
 				</div>
 			</loop:movies>
 		</div>
+		<ul class="pager">
+			<loop:navigation>
+				<li <tag:navigation[].class />>
+				<a href="<tag:navigation[].url />">
+					<tag:navigation[].text />
+				</a>
+				</li>
+			</loop:navigation>
+		</ul>
 	</div>
 </body>
 
