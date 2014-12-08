@@ -1,308 +1,336 @@
 <?php
 
 /**
-* @author Kevin
-* @copyright 2014
-* @info Web interface
-*/
+ * @author Kevin
+ * @copyright 2014
+ * @info Web interface
+ */
 
 //Debug
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once("bTemplate.php");
-require_once("./../functions/sqlQuery.php");
+require_once ("bTemplate.php");
+require_once ("./../functions/sqlQuery.php");
 
-//Template
-$bTemplate = new bTemplate();
-
-//Make the connection
-Database();
-
-//Default
-$pType = "";
-$pValue = array();
-$query = "";
-$url = array();
-$whereAnd = "WHERE";
-
-//Genre
-if(!empty($_GET["genre"]))
+class index
 {
-	$pType .= "s";
-	$pValue[] = $_GET["genre"];
-	
-	$query .= " INNER JOIN `genres` ON `imdb`.`imdb`=`genres`.`imdb` WHERE `genres`.`genre` = ?";
-	
-	$url["genre"] = $_GET["genre"];
-	
-	$whereAnd = "AND";
+    //Template
+    private $bTemplate;
+
+    //URL
+    private $genreURL = array();
+    private $sortURL = array();
+    private $newURL = array();
+
+    //SQL
+    private $query;
+    private $type;
+    private $value = array();
+    private $whereAnd = "WHERE";
+
+
+    public function __construct()
+    {
+        //Template
+        $this->bTemplate = new bTemplate();
+
+        //Make the connection
+        Database();
+    }
+
+    private function genre($genre)
+    {
+        //SQL
+        $this->type .= "s";
+        $this->value[] = $genre;
+
+        $this->query .= " INNER JOIN `genres` ON `imdb`.`imdb`=`genres`.`imdb` WHERE `genres`.`genre` = ?";
+
+        //URL
+        $this->newURL["genre"] = $genre;
+
+        $this->whereAnd = "AND";
+    }
+
+    private function title($title)
+    {
+        //SQL
+        $this->type .= "s";
+        $this->value[] = "%" . $title . "%";
+
+        $this->query .= " " . $this->whereAnd . " `imdb`.`title` LIKE ? ";
+
+        //URL
+        $this->newURL["title"] = $title;
+    }
+
+    private function sorting($sort)
+    {
+        //Sort order
+        if (isset($_GET["by"]) && $_GET["by"] == "DESC")
+        {
+            $by = "DESC";
+        }
+        else
+        {
+            $by = "ASC";
+        }
+
+        //SQL
+        $this->query .= " ORDER BY `imdb`.`" . $sort . "` " . $by;
+
+        $this->newURL["sort"] = $_GET["sort"];
+        $this->newURL["by"] = $by;
+    }
+
+    private function URL($type, $sort, $textG, $get, $extra, $upDown = true)
+    {
+        //Check if there are any parameters
+        if (count($sort) > 0)
+        {
+            $this->newURL = $sort;
+
+            if (isset($_GET[$get]) && $_GET[$get] == $type)
+            {
+                //No sort
+                if (!$upDown)
+                {
+                    $text = $textG;
+                    $class = "class=\"active\"";
+                }
+                //Sort
+                elseif (isset($sort["by"]) && $sort["by"] == "ASC")
+                {
+                    $this->newURL["by"] = "DESC";
+                    $text = $textG . " &#8595;";
+                    $class = "class=\"active\"";
+                }
+                elseif (isset($sort["by"]) && $sort["by"] == "DESC")
+                {
+                    $this->newURL["by"] = "ASC";
+                    $text = $textG . " &#8593;";
+                    $class = "class=\"active\"";
+                }
+            }
+            else
+            {
+                $text = $textG;
+                $class = "";
+            }
+
+            $this->newURL = "?" . http_build_query($this->newURL) . "&" . $get . "=" . $type;
+        }
+        else
+        {
+            $this->newURL = "?" . $get . "=" . $type;
+            $text = $textG;
+            $class = "";
+        }
+
+        //Template
+        $this->bTemplate->set("url" . $extra, $this->newURL);
+        $this->bTemplate->set("text" . $extra, $text);
+        $this->bTemplate->set("class" . $extra, $class);
+    }
+
+    private function readableSize($bytes)
+    {
+        //Types
+        $type = array(
+            "B",
+            "kB",
+            "MB",
+            "GB",
+            "TB",
+            "PT");
+
+        //Factor
+        $factor = floor((strlen($bytes) - 1) / 3);
+
+        //Result
+        return sprintf("%.2f", $bytes / pow(1024, $factor)) . @$type[$factor];
+    }
+
+    public function show()
+    {
+        //Genre
+        if (!empty($_GET["genre"]))
+        {
+            self::genre($_GET["genre"]);
+        }
+
+        //Search
+        if (!empty($_GET["title"]))
+        {
+            self::title($_GET["title"]);
+        }
+
+        //Order
+        if (!empty($_GET["sort"]))
+        {
+            self::sorting($_GET["sort"]);
+        }
+
+        //Remove genre from URL
+        $this->genreURL = $this->newURL;
+        unset($this->genreURL["genre"]);
+
+        //Remove genre from URL
+        $this->sortURL = $this->newURL;
+        unset($this->sortURL["sort"]);
+
+        //Create URL for sorting
+        self::URL("added", $this->sortURL, "Added", "sort", "SA");
+        self::URL("imdb", $this->sortURL, "IMDB", "sort", "SI");
+        self::URL("rating", $this->sortURL, "Rating", "sort", "SRa");
+        self::URL("release", $this->sortURL, "Release", "sort", "SRe");
+        self::URL("runtime", $this->sortURL, "Runtime", "sort", "SRu");
+        self::URL("title", $this->sortURL, "Title", "sort", "ST");
+
+        //Create URL for genres
+        self::URL("action", $this->genreURL, "Action", "genre", "GAc", false);
+        self::URL("adventure", $this->genreURL, "Adventure", "genre", "GAd", false);
+        self::URL("comedy", $this->genreURL, "Comedy", "genre", "GCo", false);
+        self::URL("crime", $this->genreURL, "Crime", "genre", "GCr", false);
+        self::URL("documentary", $this->genreURL, "Documentary", "genre", "GDo", false);
+        self::URL("drama", $this->genreURL, "Drama", "genre", "GDr", false);
+        self::URL("family", $this->genreURL, "Family", "genre", "GFam", false);
+        self::URL("fantasy", $this->genreURL, "Fantasy", "genre", "GFan", false);
+        self::URL("history", $this->genreURL, "History", "genre", "GHi", false);
+        self::URL("horror", $this->genreURL, "Horror", "genre", "GHo", false);
+        self::URL("music", $this->genreURL, "Music", "genre", "GMusic", false);
+        self::URL("musical", $this->genreURL, "Musical", "genre", "GMusica", false);
+        self::URL("mystery", $this->genreURL, "Mystery", "genre", "GMy", false);
+        self::URL("romance", $this->genreURL, "Romance", "genre", "GR", false);
+        self::URL("sci-Fi", $this->genreURL, "Sci-Fi", "genre", "GSc", false);
+        self::URL("sport", $this->genreURL, "Sport", "genre", "GSp", false);
+        self::URL("thriller", $this->genreURL, "Thriller", "genre", "GT", false);
+        self::URL("war", $this->genreURL, "War", "genre", "GWa", false);
+        self::URL("western", $this->genreURL, "Western", "genre", "GWe", false);
+
+        //Bind parameters
+        if (count($this->value) > 0)
+        {
+            $parameters = array_merge(array($this->type), $this->value);
+        }
+        else
+        {
+            $parameters = false;
+        }
+
+        //Count rows from MySQL
+        list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS `rows` FROM `imdb` " . $this->query, $parameters, true);
+
+        //Calculate how many movies
+        $movieCount = ceil($resultRows[0]["rows"] / 6);
+
+        //Limit total count to 60, for now..
+        if ($movieCount > 10)
+        {
+            $movieCount = 10;
+        }
+
+        //Total
+        $total = array();
+
+        for ($i = 0; $i <= $movieCount; $i++)
+        {
+            //Get movies
+            list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 6) . ",6", $parameters, true);
+
+            foreach ($result as $key => $fetch)
+            {
+                //Title too long
+                if (strlen($fetch["title"]) > 18)
+                {
+                    $title = substr($fetch["title"], 0, 16) . "..";
+                }
+                //Don't change
+                else
+                {
+                    $title = $fetch["title"];
+                }
+
+                //Get all genres
+                list($rowCountG, $resultG) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+
+                $genres = "";
+
+                foreach ($resultG as $key => $value)
+                {
+                    $genres .= $value["genre"] . ", ";
+                }
+
+                //Get all torrents
+                list($rowCountT, $resultT) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+
+                $torrents = array();
+
+                foreach ($resultT as $key => $valueT)
+                {
+                    //Get all trackers
+                    list($rowCountTr, $resultTr) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s", $valueT["hash"]), true);
+
+                    $avg = "";
+                    $count = 0;
+                    $trackersURL = "magnet:?xt=urn:btih:" . $valueT["hash"] . "&dn=" . urlencode($fetch["title"]);
+
+                    foreach ($resultTr as $key => $value)
+                    {
+                        if ($value["seeders"] > 0 && $value["leechers"] > 0)
+                        {
+                            $avg += $value["seeders"] / $value["leechers"];
+
+                            $count++;
+                        }
+
+                        //URL
+                        $trackersURL .= "&tr=" . urlencode($value["tracker"]);
+                    }
+
+                    //Calculate state
+                    if (($avg / $count) > 2)
+                    {
+                        $state = "Good";
+                    }
+                    elseif (($avg / $count) >= 1)
+                    {
+                        $state = "OK";
+                    }
+                    else
+                    {
+                        $state = "Bad";
+                    }
+
+                    $torrents[] = array(
+                        "url" => $trackersURL,
+                        "size" => self::readableSize($valueT["size"]),
+                        "quality" => $valueT["quality"],
+                        "state" => $state);
+                }
+
+                $total[] = array(
+                    "imdb" => $fetch["imdb"],
+                    "title" => $title,
+                    "titleOriginal" => $fetch["title"],
+                    "date" => "(" . date("Y", strtotime($fetch["release"])) . ")",
+                    "description" => $fetch["description"],
+                    "runtime" => $fetch["runtime"],
+                    "genres" => $genres,
+                    "rating" => $fetch["rating"],
+                    "torrents" => $torrents);
+            }
+        }
+
+        $this->bTemplate->set("movies", $total);
+
+        //Print the template!
+        print ($this->bTemplate->fetch("index.tpl"));
+    }
 }
 
-//Search
-if(!empty($_GET["title"]))
-{
-	$pType .= "s";
-	$pValue[] = "%".$_GET["title"]."%";
-	
-	$query .= " ".$whereAnd." `imdb`.`title` LIKE ? ";
-	
-	$url["title"] = $_GET["title"];
-}
+$show = new index();
+$show->show();
 
-//Order
-if(!empty($_GET["sort"]))
-{
-	//SQL safe, sort
-	switch ($_GET["sort"]) {
-	case "added":
-		$sort = "added";
-		break;
-	case "imdb":
-		$sort = "imdb";
-		break;
-	case "rating":
-		$sort = "rating";
-		break;
-	case "ratio":
-		//$sort = ""; //Not yet working!
-		break;
-	case "release":
-		$sort = "release";
-		break;
-	case "runtime":
-		$sort = "runtime";
-		break;
-	case "title":
-		$sort = "title";
-		break;
-	default:
-		$sort = "release";
-		break;
-	}
-	
-	//Sort order
-	if(isset($_GET["by"]) && $_GET["by"]=="DESC")
-	{
-		$by = "DESC";
-	}
-	else
-	{
-		$by = "ASC";
-	}
-	
-	//SQL Query
-	$query .= " ORDER BY `imdb`.`".$sort."` ".$by;
-	
-	$url["sort"] = $_GET["sort"];
-	$url["by"] = $by;
-}
-
-//Make list for 'sort'
-$sort = $url;
-unset($sort["sort"]);
-
-//Make list for genre
-$genre = $url;
-unset($genre["genre"]);
-
-
-//Bind parameters
-if(count($pValue)>0)
-{
-	$parameters = array_merge(array($pType),$pValue);
-}
-else
-{
-	$parameters = false;
-}
-
-//Count rows from MySQL
-list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS `rows` FROM `imdb` ".$query, $parameters, true);
-
-
-
-function humanFilesize($bytes, $decimals = 2) 
-{
-	$sz = "BKMGTP";
-	$factor = floor((strlen($bytes) - 1) / 3);
-	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
-}
-
-//Generate URL
-function createURL($type,$sort,$textG,$get,$extra,$upDown=true)
-{
-	global $bTemplate;
-	
-	//Check if there are any parameters
-	if(count($sort)>0)
-	{
-		$url = $sort;
-		
-		if(isset($_GET[$get]) && $_GET[$get]==$type)
-		{
-			//No sort
-			if(!$upDown)
-			{
-				$text = $textG;
-				$class = "class=\"active\"";
-			}
-			//Sort
-			elseif(isset($sort["by"]) && $sort["by"]=="ASC")
-			{
-				$url["by"]="DESC";
-				$text = $textG." &#8595;";
-				$class = "class=\"active\"";
-			}
-			elseif(isset($sort["by"]) && $sort["by"]=="DESC")
-			{
-				$url["by"]="ASC";
-				$text = $textG." &#8593;";
-				$class = "class=\"active\"";
-			}
-		}
-		else
-		{
-			$text = $textG;
-			$class = "";
-		}
-		
-		$url = "?".http_build_query($url)."&".$get."=".$type;
-	}
-	else
-	{
-		$url = "?".$get."=".$type;
-		$text = $textG;
-		$class = "";
-	}
-	
-	//Template
-	$bTemplate->set("url".$extra, $url);
-	$bTemplate->set("text".$extra, $text);
-	$bTemplate->set("class".$extra, $class);
-}
-
-//Create URL for sorting
-createURL("added",$sort,"Added","sort","SA");
-createURL("imdb",$sort,"IMDB","sort","SI");
-createURL("rating",$sort,"Rating","sort","SRa");
-createURL("release",$sort,"Release","sort","SRe");
-createURL("runtime",$sort,"Runtime","sort","SRu");
-createURL("title",$sort,"Title","sort","ST");
-
-//Create URL for genres
-createURL("action",$genre,"Action","genre","GAc",false);
-createURL("adventure",$genre,"Adventure","genre","GAd",false);
-createURL("comedy",$genre,"Comedy","genre","GCo",false);
-createURL("crime",$genre,"Crime","genre","GCr",false);
-createURL("documentary",$genre,"Documentary","genre","GDo",false);
-createURL("drama",$genre,"Drama","genre","GDr",false);
-createURL("family",$genre,"Family","genre","GFam",false);
-createURL("fantasy",$genre,"Fantasy","genre","GFan",false);
-createURL("history",$genre,"History","genre","GHi",false);
-createURL("horror",$genre,"Horror","genre","GHo",false);
-createURL("music",$genre,"Music","genre","GMusic",false);
-createURL("musical",$genre,"Musical","genre","GMusica",false);
-createURL("mystery",$genre,"Mystery","genre","GMy",false);
-createURL("romance",$genre,"Romance","genre","GR",false);
-createURL("sci-Fi",$genre,"Sci-Fi","genre","GSc",false);
-createURL("sport",$genre,"Sport","genre","GSp",false);
-createURL("thriller",$genre,"Thriller","genre","GT",false);
-createURL("war",$genre,"War","genre","GWa",false);
-createURL("western",$genre,"Western","genre","GWe",false);
-
-//Calculate how many movies
-$movieCount = ceil($resultRows[0]["rows"]/6);
-
-//Limit total count to 60, for now..
-if($movieCount>10)
-{		
-	$movieCount = 10;
-}
-
-$total = array();
-
-for($i=0;$i<=$movieCount;$i++)
-{
-	//Get movies
-	list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` ".$query." LIMIT ".($i*6).",6", $parameters, true);
-	
-	foreach($result as $key=>$fetch)
-	{
-		//Title too long
-		if(strlen($fetch["title"])>18)
-		{
-			$title = substr($fetch["title"], 0, 16)."..";
-		}
-		//Don't change
-		else
-		{
-			$title = $fetch["title"];
-		}
-		
-		//Get all genres
-		list($rowCountG, $resultG) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s",$fetch["imdb"]), true);
-		
-		$genres = "";
-		
-		foreach($resultG as $key=>$value)
-		{		
-			$genres .= $value["genre"].", ";
-		}
-		
-		//Get all torrents
-		list($rowCountT, $resultT) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s",$fetch["imdb"]), true);
-		
-		$torrents = array();
-		
-		foreach($resultT as $key=>$valueT)
-		{	
-			//Get all trackers
-			list($rowCountTr, $resultTr) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s",$valueT["hash"]), true);
-			
-			$avg = "";
-			$iT=0;
-			$leechers = "";
-			$trackersURL = "magnet:?xt=urn:btih:".$valueT["hash"]."&dn=".urlencode($fetch["title"]);
-			
-			foreach($resultTr as $key=>$value)
-			{
-				if($value["seeders"]>0 && $value["leechers"]>0)
-				{
-					$avg += $value["seeders"]/$value["leechers"];
-					
-					$iT++;
-					
-					
-				}
-				
-				$trackersURL .= "&tr=".urlencode($value["tracker"]);
-			}
-					
-			//Calculate state
-			if(($avg/$iT)>2)
-			{
-				$state="Good";
-			}
-			elseif(($avg/$iT)>=1)
-			{
-				$state="OK";
-			}
-			else
-			{
-				$state = "Bad";
-			}
-			
-			$torrents[] = array("url"=>$trackersURL,"size"=> humanFilesize($valueT["size"]), "quality"=>$valueT["quality"], "state"=>$state);
-			
-			
-		}
-		
-		$total[] = array("imdb"=> $fetch["imdb"], "title" => $title, "titleOriginal" => $fetch["title"], "date" => "(".date("Y",strtotime($fetch["release"])).")", "description" => $fetch["description"], "runtime" => $fetch["runtime"], "genres" => $genres, "rating" => $fetch["rating"], "torrents"=>$torrents);
-	}
-}
-
-$bTemplate->set("movies", $total);
-
-//Print the template!
-print($bTemplate->fetch("index.tpl"));
+?>
