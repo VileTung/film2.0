@@ -72,12 +72,6 @@ class index
 	
 	private function pager($page)
 	{
-		//SQL
-        //$this->type .= "s";
-        //$this->value[] = $page;
-
-        //$this->query .= " " . $this->whereAnd . " `imdb`.`title` LIKE ? ";
-
         //URL
         $this->newURL["page"] = $page;
 	}
@@ -102,14 +96,14 @@ class index
     }
 
     private function URL($type, $sort, $textG, $get, $extra, $upDown = true)
-    {
+    {		
         //Check if there are any parameters
         if (count($sort) > 0)
         {
             $URL = $sort;
 
             if (isset($_GET[$get]) && $_GET[$get] == $type)
-            {
+            {				
                 //No sort
                 if (!$upDown)
                 {
@@ -119,13 +113,13 @@ class index
                 //Sort
                 elseif (isset($sort["by"]) && $sort["by"] == "ASC")
                 {
-                    $this->newURL["by"] = "DESC";
+                    $URL["by"] = "DESC";
                     $text = $textG . " &#8595;";
                     $class = "class=\"active\"";
                 }
                 elseif (isset($sort["by"]) && $sort["by"] == "DESC")
                 {
-                    $this->newURL["by"] = "ASC";
+                    $URL["by"] = "ASC";
                     $text = $textG . " &#8593;";
                     $class = "class=\"active\"";
                 }

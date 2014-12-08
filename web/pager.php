@@ -41,7 +41,7 @@ class pager
 		if(($this->current-1)<1)
 		{
 			//Disabled
-			$list[] = array("class"=>"class=\"disabled\"", "url"=>"?".http_build_query($this->url), "text"=>"Previous");
+			$list[] = array("class"=>"class=\"disabled\"", "url"=>"#", "text"=>"Previous");
 		}
 		else
 		{
@@ -59,7 +59,7 @@ class pager
 		if(($this->current+1)>$this->pages)
 		{
 			//Disabled
-			$list[] = array("class"=>"class=\"disabled\"", "url"=>"?".http_build_query($this->url), "text"=>"Next");
+			$list[] = array("class"=>"class=\"disabled\"", "url"=>"#", "text"=>"Next");
 		}
 		else
 		{
