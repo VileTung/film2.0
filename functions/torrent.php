@@ -182,7 +182,7 @@ class torrent
             if (!$rowCount > 0)
             {				
                 //Insert data
-                sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`, `reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
+                sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`,`reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
                     "ssssssss",
                     $this->movieName,
                     $imdb,
