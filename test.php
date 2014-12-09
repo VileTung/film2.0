@@ -1,6 +1,32 @@
 #!/usr/bin/php
 <?php
 	
+require_once("functions/functions.php");
+	
+try{
+$logging = new loggen($log."testSub.txt");
+
+$test = new subtitle("1790864");
+$test->yify();
+} catch(Exception $e) {
+    $logging->error($e->getMessage());
+}
+
+
+
+
+//$test->yify("123");
+
+
+	
+	//$test = "BKMGTP";
+	
+	//$test = array("B","kB","MB","GB","TB","PT");
+	
+	//var_dump($test[0]);
+	
+	die();
+	
 //require_once("functies/log.php");
 
 /*$log = new loggen("/var/www/film2.0/test.txt");
@@ -24,7 +50,7 @@ $log->info("test");*/
 
 //var_dump(preg_match("~^[0-9a-f]{40}$~i","a11A2AC68A11634E980F265CB1433C599D017A759"));
 	
-require_once("functions/functions.php");
+
 
 /*Database();
 
@@ -91,7 +117,7 @@ $logging = new loggen($log."test.txt");
 }
 	
 	
-	die(); exit();*/
+	die(); exit();
 	
 	
 	
@@ -108,4 +134,4 @@ try{
 
 } catch(Exception $e) {
     $logging->error($e->getMessage());
-}
+}*/

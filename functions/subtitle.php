@@ -6,8 +6,6 @@
 * @info Subtitles
 */
 
-//http://www.yifysubtitles.com/movie-imdb/tt1646971
-
 class subtitle
 {
 	//Set IMDB
@@ -19,8 +17,14 @@ class subtitle
 		$this->imdb = sprintf("%07d", $id);
 	}
 	
+	//Get subtitles from YIFY!
 	public function yify()
 	{
+		global $logging;
+		
+		//Message
+		$logging->info("YIFY Subtitle (".$this->imdb.")");
+		
 		//Get page
 		list($state, $content) = cURL("http://yifysubtitles.com/movie-imdb/tt".$this->imdb);
 		
@@ -58,36 +62,38 @@ class subtitle
 		//Dutch
 		if(count($nl)>0)
 		{
-			$nl = max($nl);
+			foreach($nl as $dutch)
+			{
+				//Construct URL
+				$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$dutch["url"]).".zip";
 			
-			//Construct URL
-			$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$nl["url"]).".zip";
-			
-			//Retrieve subtitle
-			self::saveSubtitle($url);
-			
+				//Retrieve subtitle
+				self::saveSubtitle($url,"nl");
+			}
 		}
 		//English
 		elseif(count($en)>0)
 		{
-			$en = max($en);
+			foreach($en as $english)
+			{
+				//Construct URL
+				$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$english["url"]).".zip";
 			
-			//Construct URL
-			$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$en["url"]).".zip";
-			
-			//Retrieve subtitle
-			self::saveSubtitle($url);
+				//Retrieve subtitle
+				self::saveSubtitle($url,"en");
+			}
 		}
 		//Failed
 		else
 		{
-			print("FAILED\n");
+			//Message
+			$logging->warning("No subtitles found! (".$this->imdb.")");
 		}
 	}
 	
-	private function saveSubtitle($url)
+	private function saveSubtitle($url,$language)
 	{
-		global $cache, $subtitle;
+		global $cache, $logging;
 		
 		//Download subtitle
 		list($state, $content) = cURL($url);
@@ -103,32 +109,162 @@ class subtitle
 		fwrite($file, $content);
 		fclose($file);
 		
-		//Unzip
-		// assuming file.zip is in the same directory as the executing script.
-		$file = $cache.$this->imdb.".zip";
-
-		// get the absolute path to $file
-		$path = pathinfo(realpath($file), PATHINFO_DIRNAME)."/".$this->imdb;
-
-		var_dump($path);
-		
+		//Unzip		
 		$zip = new ZipArchive;
-		$res = $zip->open($file);
-		if ($res === TRUE) {
-			// extract it to the path we determined above
-			$zip->extractTo($path);
+		$extract = $zip->open($cache.$this->imdb.".zip");
+		
+		//Can we open it?
+		if ($extract === true) 
+		{
+			//Extract file
+			$zip->extractTo($cache.$this->imdb);
 			$zip->close();
-			echo "WOOT! $file extracted to $path";
-		} else {
-			echo "Doh! I couldn't open $file";
+			
+			//Message
+			$logging->info("Subtitle extracted! (".$this->imdb." - ".$language.")");
+		} 
+		//Failed
+		else 
+		{
+			//Remove cache, zip file and extracted directory
+			self::removeCache();
+			
+			//Error
+			throw new Exception("Subtitle extraction failed! (".$this->imdb." - ".$language." - ".$cache.$this->imdb.".zip)");
 		}
 		
 		//Move to subtitle dir
+		self::scanSubtitle($cache.$this->imdb,$language);
 		
-		//Remove cache
-		rmdir($path);
-		unlink($file);
+		//Remove cache, zip file and extracted directory
+		self::removeCache();
+	}
+	
+	//Scan for subtitles
+	private function scanSubtitle($dir,$language)
+	{
+		global $logging;
 		
+		//Message
+		$logging->info("Scanning for subtitles in folder");
+		
+		//Check if is directory
+		if (is_dir($dir)) 
+		{
+			//Objects in the directory
+			$objects = scandir($dir);
+			
+			foreach ($objects as $object) 
+			{				
+				if($object != "." && $object != "..")
+				{
+					//If object is a file, only srt and filesize > 1000 bytes
+					if(pathinfo($dir."/".$object, PATHINFO_EXTENSION)=="srt" && filesize($dir."/".$object)>1000)
+					{
+						self::moveSubtitle($dir."/".$object,$language);
+					}
+					//Else if dir, enter it
+					elseif (filetype($dir."/".$object) == "dir") 
+					{
+						self::scanSubtitle($dir."/".$object,$language);
+					}
+				}
+			} 
+			reset($objects);
+		} 
+	}
+	
+	//Move subtitles
+	private function moveSubtitle($file,$language)
+	{
+		global $subtitle, $logging;
+		
+		//Check if subtitle does exist
+		$md5File = md5_file($file);
+		
+		if(file_exists($subtitle.$this->imdb."_".$md5File.".srt"))
+		{
+			//Remove cache, zip file and extracted directory
+			self::removeCache();
+			
+			//Error
+			throw new Exception("Subtitle does exist");
+		}
+		
+		//Moving
+		$stateR = rename($file, $subtitle.$this->imdb."_".$md5File.".srt");
+		
+		if(!$stateR)
+		{
+			//Remove cache, zip file and extracted directory
+			self::removeCache();
+			
+			//Error
+			throw new Exception("Failed to move subtitle file");
+		}
+		
+		//DB connection
+		Database();
+		
+		//Check if in DB
+		list($rowCount, $result) = sqlQueryi("SELECT `hash` FROM `subtitle` WHERE `imdb` = ? AND `hash` = ?", array("ss",$this->imdb,$md5File), true);
+		
+		if($rowCount>0)
+		{
+			//Message
+			$logging->warning("Removed subtitle(s) from Database");
+			
+			//Remove from DB
+			sqlQueryi("DELETE FROM `subtitle` WHERE `imdb` = ? AND `hash` = ?", array("ss",$this->imdb,$md5File));
+		}
+		
+		//Insert in DB
+		sqlQueryi("INSERT INTO `subtitle` (`imdb`,`hash`,`language`) VALUES (?,?,?)", array("sss", $this->imdb,$md5File,$language));
+		
+		//Message
+		$logging->info("Subtitle added (".$this->imdb." - ".$language.")");
+	}
+	
+	//Remove cached files
+	private function removeCache()
+	{
+		global $cache, $logging;
+		
+		unlink($cache.$this->imdb.".zip");
+		self::recursiveDelete($cache.$this->imdb);
+	}
+	
+	//Can remove a directory recursive
+	private function recursiveDelete($dir)
+	{
+		//Check if is directory
+		if (is_dir($dir)) 
+		{
+			//Objects in the directory
+			$objects = scandir($dir);
+			
+			foreach ($objects as $object) 
+			{				
+				if ($object != "." && $object != "..") 
+				{
+					//If directory, then clean it
+					if (filetype($dir."/".$object) == "dir") 
+					{
+						self::recursiveDelete($dir."/".$object);
+					} 
+					//File
+					else 
+					{
+						//Remove file
+						unlink($dir."/".$object);
+					}
+				} 
+			} 
+			reset($objects);
+			
+			//Remove directory
+			rmdir($dir); 
+		} 
 	}
 }
 

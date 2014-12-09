@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS `data`;
 CREATE TABLE `data` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
-  `imdb` int(10) unsigned NOT NULL,
+  `imdb` varchar(10) NOT NULL,
   `hash` varchar(40) NOT NULL,
   `size` int(20) unsigned NOT NULL,
   `quality` varchar(50) NOT NULL,
@@ -45,6 +45,16 @@ CREATE TABLE `imdb` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `subtitle`;
+CREATE TABLE `subtitle` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `imdb` varchar(10) NOT NULL,
+  `hash` varchar(32) NOT NULL,
+  `language` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `trackers`;
 CREATE TABLE `trackers` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -57,4 +67,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-11-18 14:35:04
+-- 2014-12-09 10:24:32
