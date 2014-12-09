@@ -21,7 +21,6 @@ if (php_sapi_name() == "cli") {
 		exit;
 	}
 	
-	//print("\n");
 	print("Starting page: ");
 	$min = trim(fgets(STDIN));
 
@@ -31,7 +30,6 @@ if (php_sapi_name() == "cli") {
 		exit;
 	}
 
-	//print("\n");
 	print("Ending page: ");	
 	$max = trim(fgets(STDIN));
 
@@ -58,8 +56,7 @@ if (php_sapi_name() == "cli") {
 	}
 
 	print("\n\n");
-
-	//Kijken of we alle benodigde parameters hebben
+	
 	if(isset($retriever) && isset($min) && isset($max))
 	{
 		try{

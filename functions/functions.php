@@ -37,6 +37,7 @@ $functions = $root . "functions/";
 $log = $root . "log/";
 $poster = $root . "poster/";
 $scraper = $root . "scraper/";
+$subtitle = $root . "subtitle/";
 
 //Load additional functions
 require_once ($functions . "cache.php");
@@ -47,6 +48,7 @@ require_once ($functions . "log.php");
 require_once ($functions . "regex.php");
 require_once ($functions . "scrape.php");
 require_once ($functions . "sqlQuery.php");
+require_once ($functions . "subtitle.php");
 require_once ($functions . "torrent.php");
 
 //Scrapers
