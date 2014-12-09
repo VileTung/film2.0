@@ -58,7 +58,5 @@ class scraper
 			//Message
 			$logging->error($e->getMessage());
 		}
-		
-		print("\n");
 	}
 }

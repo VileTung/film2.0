@@ -72,8 +72,11 @@ if (php_sapi_name() == "cli") {
 			//Message
 			$logging->info("Starting '".$retriever."' (".$min." t/m ".$max.")!");
 			
+			//Initialize YTS
+			$yts = new yts();
+			
 			//Start YTS
-			$yts = new yts($min,$max);
+			$yts->movies($min,$max);
 			
 			//Removes lock
 			$locker->stop();
