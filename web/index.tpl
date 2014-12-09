@@ -234,10 +234,26 @@
 							</div>
 							<div class="modal-body">
 								<h6><tag:movies[].runtime /> min, <tag:movies[].rating />, <tag:movies[].genres /></h6>
+								<if:subtitle>
+								<div class="btn-group pull-right">
+									<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+										Subtitle(s) <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" role="menu">
+										<loop:movies[].subtitles>
+											<li>
+												<a href="<tag:movies[].subtitles[].url />">
+													<tag:movies[].subtitles[].language />
+												</a>
+											</li>
+										</loop:movies[].subtitles>
+									</ul>
+								</div>
+								</if:subtitle>
+							<p>
 								<tag:movies[].description />
-
 								<div class="row">
-									<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 ">
+									<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
 										<table class="table table-condensed" style="font-size: 0.7em">
 											<thead>
 												<tr>
@@ -266,8 +282,8 @@
 											</tbody>
 										</table>
 									</div>
-
 								</div>
+								</p>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

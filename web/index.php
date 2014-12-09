@@ -338,6 +338,34 @@ class index
                         "state" => $state);
                 }
 
+				//Get all subtitles
+                list($rowCountS, $resultS) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+				
+				//Subtitle
+				$subtitles = array();
+				
+				if($rowCountS>0)
+				{
+					foreach($resultS as $keyS=>$valueS)
+					{
+						//Show it nicely
+						if($valueS["language"]=="nl")
+						{
+							$language = "Dutch";
+						}
+						elseif($valueS["language"]=="en")
+						{
+							$language = "English";
+						}
+						
+						$subtitles[] = array("url"=>"http://192.168.1.202/film2.0/subtitle/".$valueS["imdb"]."_".$valueS["hash"].".srt","language"=>$language);
+					}
+				}
+				else
+				{					
+					$subtitles[0] = array("url"=>"#","language"=>"<em>None</em>");
+				}
+				
                 $total[] = array(
                     "imdb" => $fetch["imdb"],
                     "title" => $title,
@@ -347,7 +375,8 @@ class index
                     "runtime" => $fetch["runtime"],
                     "genres" => $genres,
                     "rating" => $fetch["rating"],
-                    "torrents" => $torrents);
+                    "torrents" => $torrents,
+					"subtitles" => $subtitles);
             }
         }
 		
