@@ -6,8 +6,8 @@ require_once("functions/functions.php");
 try{
 $logging = new loggen($log."testSub.txt");
 
-$test = new subtitle("1790864");
-$test->yify();
+$test = new yts();
+$test->subtitle("1790864");
 } catch(Exception $e) {
     $logging->error($e->getMessage());
 }

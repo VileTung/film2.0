@@ -17,81 +17,7 @@ class subtitle
 		$this->imdb = sprintf("%07d", $id);
 	}
 	
-	//Get subtitles from YIFY!
-	public function yify()
-	{
-		global $logging;
-		
-		//Message
-		$logging->info("YIFY Subtitle (".$this->imdb.")");
-		
-		//Get page
-		list($state, $content) = cURL("http://yifysubtitles.com/movie-imdb/tt".$this->imdb);
-		
-		//Failed
-		if (!$state)
-		{
-			throw new Exception("Invalid YIFY subtitle-url (" . $this->imdb . ")");
-		}
-		
-		//Regex
-		$regex = new regex;
-		
-		//Extract info
-		$data = $regex->main("yify",$content);
-		
-		//Default
-		$nl = array();
-		$en = array();
-		
-		//Loop
-		foreach($data[3] as $key=>$language)
-		{			
-			//Dutch
-			if(strtolower($language)=="dutch" && strpos($data[0][$key],"verified") !== false)
-			{				
-				$nl[] = array("id"=>$data[1][$key],"votes"=>$data[2][$key],"url"=>$data[4][$key]);
-			}
-			//English
-			elseif(strtolower($language)=="english" && strpos($data[0][$key],"verified") !== false)
-			{
-				$en[] = array("id"=>$data[1][$key],"votes"=>$data[2][$key],"url"=>$data[4][$key]);
-			}
-		}
-		
-		//Dutch
-		if(count($nl)>0)
-		{
-			foreach($nl as $dutch)
-			{
-				//Construct URL
-				$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$dutch["url"]).".zip";
-			
-				//Retrieve subtitle
-				self::saveSubtitle($url,"nl");
-			}
-		}
-		//English
-		elseif(count($en)>0)
-		{
-			foreach($en as $english)
-			{
-				//Construct URL
-				$url = "http://yifysubtitles.com/".str_replace("subtitles","subtitle",$english["url"]).".zip";
-			
-				//Retrieve subtitle
-				self::saveSubtitle($url,"en");
-			}
-		}
-		//Failed
-		else
-		{
-			//Message
-			$logging->warning("No subtitles found! (".$this->imdb.")");
-		}
-	}
-	
-	private function saveSubtitle($url,$language)
+	public function saveSubtitle($url,$language)
 	{
 		global $cache, $logging;
 		
@@ -228,7 +154,7 @@ class subtitle
 	//Remove cached files
 	private function removeCache()
 	{
-		global $cache, $logging;
+		global $cache;
 		
 		unlink($cache.$this->imdb.".zip");
 		self::recursiveDelete($cache.$this->imdb);
