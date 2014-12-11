@@ -52,21 +52,24 @@ require_once ($functions . "subtitle.php");
 require_once ($functions . "torrent.php");
 
 //Scrapers
+require_once ($scraper . "openSubtitles.php");
 require_once ($scraper . "scraper.php");
 require_once ($scraper . "yts.php");
+
+//Guzzle client
+$client = new Client();
 
 //cURL
 function cURL($url)
 {
-    //Guzzle client
-    $client = new Client();
-
+	global $client;
+	
     try
     {
         //Try
-        $request = $client->createRequest("GET", $url, ["timeout" => 60]);
-        $response = $client->send($request);
-
+        $request = $client->createRequest("GET", $url, ["timeout" => 60, "cookies" => true]);
+        $response = $client->send($request);	
+		
         //Return data
         return array(true, $response->getBody()->getContents());
     }

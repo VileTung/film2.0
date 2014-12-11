@@ -102,7 +102,7 @@ class loggen
     //Function for debug messages
     public function debug($value, $tag = self::defaultTag)
     {
-        self::writeLog("DEBUG", "\033[01;32m", $value, $tag);
+        self::writeLog("DEBUG", "\033[00;37m", $value, $tag);
     }
 }
 
