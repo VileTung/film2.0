@@ -8,7 +8,7 @@
 
 class yts
 {
-    private $iMovie = 0;
+    private $iMovie = 1;
 
     //Get movies
     public function movies($startPage = 1, $endPage = 200)
