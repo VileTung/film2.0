@@ -6,19 +6,18 @@
 * @info Cache IMDB information
 */
 
-function cache($id,$url) 
+function cache($id,$url,$age=(60*1440*7*4)) 
 {
 	global $logging, $cache;
 	
 	//If cache exists
 	if(file_exists($cache.$id))
 	{
-		$made = filemtime($cache.$id);
+		$future = filemtime($cache.$id)+$age;
 		$now = time();
-		$diff = round(abs($now - $made) / 60);
 		
 		//Must not be older than one month
-		if ($diff > (1440*7*4))
+		if ($future > $now)
 		{
 			//Message
 			$logging->info("Read cache (".$id.")");
