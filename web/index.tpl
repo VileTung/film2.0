@@ -213,9 +213,9 @@
 				<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
 					<div class="panel panel-default" data-toggle="modal" data-target="#info-<tag:movies[].imdb />" style="font-size: 0.8em;cursor:pointer;">
 						<div class="panel-heading" style="width: 100%">
-							<h6 id="fitText-<tag:movies[].imdb />" class="panel-title" title="<tag:movies[].title /> <tag:movies[].date />" style="font-size: 0.8em;"><tag:movies[].title /></h6>
+							<h6 id="fitText-<tag:movies[].imdb />" class="panel-title" title="<tag:movies[].titleOriginal /> <tag:movies[].date />" style="font-size: 0.8em;"><tag:movies[].title /></h6>
 						</div>
-						<div class="panel-body" title="<tag:movies[].title /> <tag:movies[].date />" style="background: url('./../poster/<tag:movies[].imdb />.jpg') no-repeat center; height: 250px">
+						<div class="panel-body" title="<tag:movies[].titleOriginal /> <tag:movies[].date />" style="background: url('./../poster/<tag:movies[].imdb />.jpg') no-repeat center; height: 250px">
 						</div>
 					</div>
 				</div>
