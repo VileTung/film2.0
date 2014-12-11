@@ -28,16 +28,16 @@ function sqlQueryi($query, $parameters = false, $result = false)
 {
     global $MySQLi;
 
-	//Make sure we have a connection
-	if(!$MySQLi)
-	{
-		return("There is no active MySQL connection!");
-	}
-	
+    //Make sure we have a connection
+    if (!$MySQLi)
+    {
+        return ("There is no active MySQL connection!");
+    }
+
     //Prepare SQL
     $execute = $MySQLi->prepare($query);
 
-	//Error
+    //Error
     if (!$execute)
     {
         return ("SQLi error: " . $MySQLi->error . "\nQuery: " . $query);
@@ -45,12 +45,12 @@ function sqlQueryi($query, $parameters = false, $result = false)
 
     if ($parameters)
     {
-		//Make sure everything is correct
-		if(strlen($parameters[0])!=(count($parameters)-1))
-		{
-			return("Parameters do not match, ".strlen($parameters[0])." & ".(count($parameters)-1));
-		}
-		
+        //Make sure everything is correct
+        if (strlen($parameters[0]) != (count($parameters) - 1))
+        {
+            return ("Parameters do not match, " . strlen($parameters[0]) . " & " . (count($parameters) - 1));
+        }
+
         //Place parameters in a new array as reference
         $parametersRef = array();
 
@@ -61,7 +61,7 @@ function sqlQueryi($query, $parameters = false, $result = false)
         {
             $parametersRef[] = &$parameters[$i];
         }
-		
+
         //Parameters
         call_user_func_array(array($execute, "bind_param"), $parametersRef);
     }

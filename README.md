@@ -12,6 +12,7 @@ _How do I, as a developer, start working on the project?_
 
 1. _Get Torrents from YTS_
 2. _Get subtitles from YTS_
+2. _Get subtitles from OpenSubtitles.org_
 3. _Webinterface_
 
 ### Future

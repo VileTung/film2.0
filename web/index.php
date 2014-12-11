@@ -8,7 +8,7 @@
 
 //Debug
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set("display_errors", 1);
 
 require_once ("bTemplate.php");
 require_once ("pager.php");
@@ -51,7 +51,7 @@ class index
         //URL
         $this->newURL["genre"] = $genre;
 
-		//Part of SQL
+        //Part of SQL
         $this->whereAnd = "AND";
     }
 
@@ -65,16 +65,16 @@ class index
 
         //URL
         $this->newURL["title"] = $title;
-		
-		//Part of SQL
-		$this->whereAnd = "AND";
+
+        //Part of SQL
+        $this->whereAnd = "AND";
     }
-	
-	private function pager($page)
-	{
+
+    private function pager($page)
+    {
         //URL
         $this->newURL["page"] = $page;
-	}
+    }
 
     private function sorting($sort)
     {
@@ -96,14 +96,14 @@ class index
     }
 
     private function URL($type, $sort, $textG, $get, $extra, $upDown = true)
-    {		
+    {
         //Check if there are any parameters
         if (count($sort) > 0)
         {
             $URL = $sort;
 
             if (isset($_GET[$get]) && $_GET[$get] == $type)
-            {				
+            {
                 //No sort
                 if (!$upDown)
                 {
@@ -168,15 +168,15 @@ class index
         //Page
         if (!empty($_GET["page"]))
         {
-            $this->newURL["page"]=$_GET["page"];
+            $this->newURL["page"] = $_GET["page"];
         }
-		
-		//Genre
+
+        //Genre
         if (!empty($_GET["genre"]))
         {
             self::genre($_GET["genre"]);
         }
-		
+
         //Search
         if (!empty($_GET["title"]))
         {
@@ -225,7 +225,7 @@ class index
         self::URL("thriller", $this->genreURL, "Thriller", "genre", "GT", false);
         self::URL("war", $this->genreURL, "War", "genre", "GWa", false);
         self::URL("western", $this->genreURL, "Western", "genre", "GWe", false);
-		
+
         //Bind parameters
         if (count($this->value) > 0)
         {
@@ -248,22 +248,22 @@ class index
         {
             $movieCount = 6;
         }
-		
-		//Necessary for the pager
-		if(isset($_GET["page"]) && $_GET["page"]!=1)
-		{
-			$extra = ($movieCount) * 5;
-		}
-		else
-		{
-			$extra = 0;
-		}
-		
+
+        //Necessary for the pager
+        if (isset($_GET["page"]) && $_GET["page"] != 1)
+        {
+            $extra = ($movieCount) * 5;
+        }
+        else
+        {
+            $extra = 0;
+        }
+
         //Total
         $total = array();
 
-        for ($i = 0; $i <= $movieCount-1; $i++)
-        {			
+        for ($i = 0; $i <= $movieCount - 1; $i++)
+        {
             //Get movies
             list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 5 + $extra) . ",5", $parameters, true);
 
@@ -338,34 +338,34 @@ class index
                         "state" => $state);
                 }
 
-				//Get all subtitles
+                //Get all subtitles
                 list($rowCountS, $resultS) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
-				
-				//Subtitle
-				$subtitles = array();
-				
-				if($rowCountS>0)
-				{
-					foreach($resultS as $keyS=>$valueS)
-					{
-						//Show it nicely
-						if($valueS["language"]=="nl")
-						{
-							$language = "Dutch";
-						}
-						elseif($valueS["language"]=="en")
-						{
-							$language = "English";
-						}
-						
-						$subtitles[] = array("url"=>"http://192.168.1.202/film2.0/subtitle/".$valueS["imdb"]."_".$valueS["hash"].".srt","language"=>$language);
-					}
-				}
-				else
-				{					
-					$subtitles[0] = array("url"=>"#","language"=>"<em>None</em>");
-				}
-				
+
+                //Subtitle
+                $subtitles = array();
+
+                if ($rowCountS > 0)
+                {
+                    foreach ($resultS as $keyS => $valueS)
+                    {
+                        //Show it nicely
+                        if ($valueS["language"] == "nl")
+                        {
+                            $language = "Dutch";
+                        }
+                        elseif ($valueS["language"] == "en")
+                        {
+                            $language = "English";
+                        }
+
+                        $subtitles[] = array("url" => "http://192.168.1.202/film2.0/subtitle/" . $valueS["imdb"] . "_" . $valueS["hash"] . ".srt", "language" => $language);
+                    }
+                }
+                else
+                {
+                    $subtitles[0] = array("url" => "#", "language" => "<em>None</em>");
+                }
+
                 $total[] = array(
                     "imdb" => $fetch["imdb"],
                     "title" => $title,
@@ -376,50 +376,50 @@ class index
                     "genres" => $genres,
                     "rating" => $fetch["rating"],
                     "torrents" => $torrents,
-					"subtitles" => $subtitles);
+                    "subtitles" => $subtitles);
             }
         }
-		
-		//Set the movies
+
+        //Set the movies
         $this->bTemplate->set("movies", $total);
-		
-		//URL for title search
-		if(isset($this->newURL["genre"]))
-		{
-			$this->bTemplate->set('genre', true, true);
-			$this->bTemplate->set("genreURL",$this->newURL["genre"]);
-		}
-		else
-		{
-			$this->bTemplate->set('genre', false, true);
-		}
-		
-		if(isset($this->newURL["sort"]))
-		{
-			$this->bTemplate->set('sort', true, true);
-			$this->bTemplate->set("sortURL",$this->newURL["sort"]);
-		}
-		else
-		{
-			$this->bTemplate->set('sort', false, true);
-		}
-		
-		if(isset($this->newURL["by"]))
-		{
-			$this->bTemplate->set('by', true, true);
-			$this->bTemplate->set("byURL",$this->newURL["by"]);
-		}
-		else
-		{
-			$this->bTemplate->set('by', false, true);
-		}
-		
-		//Pager
-		$pager = new pager($pageCount, $this->newURL);
-		$navigation = $pager->navigation();
+
+        //URL for title search
+        if (isset($this->newURL["genre"]))
+        {
+            $this->bTemplate->set('genre', true, true);
+            $this->bTemplate->set("genreURL", $this->newURL["genre"]);
+        }
+        else
+        {
+            $this->bTemplate->set('genre', false, true);
+        }
+
+        if (isset($this->newURL["sort"]))
+        {
+            $this->bTemplate->set('sort', true, true);
+            $this->bTemplate->set("sortURL", $this->newURL["sort"]);
+        }
+        else
+        {
+            $this->bTemplate->set('sort', false, true);
+        }
+
+        if (isset($this->newURL["by"]))
+        {
+            $this->bTemplate->set('by', true, true);
+            $this->bTemplate->set("byURL", $this->newURL["by"]);
+        }
+        else
+        {
+            $this->bTemplate->set('by', false, true);
+        }
+
+        //Pager
+        $pager = new pager($pageCount, $this->newURL);
+        $navigation = $pager->navigation();
 
         $this->bTemplate->set("navigation", $navigation);
-		
+
         //Print the template!
         print ($this->bTemplate->fetch("index.tpl"));
     }

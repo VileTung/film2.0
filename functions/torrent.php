@@ -16,31 +16,31 @@ class torrent
 
     //Save largest filesize
     private $movieSize;
-	
-	//Save the filename
+
+    //Save the filename
     private $movieName;
 
     //Scraped results
     private $scrapedData = array();
 
-	//Set $hash, only needed for deleting
-	public function __construct($hash=false)
-	{
-		//Test if valid..
-		if (preg_match("~^[0-9a-f]{40}$~i", $hash))
+    //Set $hash, only needed for deleting
+    public function __construct($hash = false)
+    {
+        //Test if valid..
+        if (preg_match("~^[0-9a-f]{40}$~i", $hash))
         {
             $this->hash = $hash;
         }
-	}
-	
+    }
+
     //We've got a torrent file
     public function file($url)
     {
-		global $logging;
-		
-		//Message
-		$logging->info("File-method");
-		
+        global $logging;
+
+        //Message
+        $logging->info("File-method");
+
         //Retrieve file
         list($state, $content) = cURL($url);
 
@@ -49,9 +49,9 @@ class torrent
         {
             throw new Exception("Invalid torrent-url (" . $url . ")");
         }
-		
-		//Start lightBenc
-		$lightBenc = new lightbenc;
+
+        //Start lightBenc
+        $lightBenc = new lightbenc;
 
         //Decode torrent
         $decoded = $lightBenc->bdecode($content);
@@ -62,8 +62,8 @@ class torrent
         //Calculate filesize
         $movieInfo = max($decoded["info"]["files"]);
         $this->movieSize = $movieInfo["length"];
-		
-		//Filename
+
+        //Filename
         $this->movieName = $movieInfo["path"][0];
 
         //There is only one tracker in this variable
@@ -77,19 +77,19 @@ class torrent
 
         //Remove duplicates
         $this->trackers = array_unique($trackerList);
-		
-		//Return filename, for OpenSubtitles.org
-		return $this->movieName;
+
+        //Return filename, for OpenSubtitles.org
+        return $this->movieName;
     }
 
     //We've got some trackers and hash
     public function tracker($hash, $trackers)
     {
-		global $logging;
-		
-		//Message
-		$logging->info("Tracker-method");
-		
+        global $logging;
+
+        //Message
+        $logging->info("Tracker-method");
+
         //Provided hash is not valid
         if (!preg_match("~^[0-9a-f]{40}$~i", $hash))
         {
@@ -110,8 +110,8 @@ class torrent
     //Now we are going to scrape
     public function scrape()
     {
-		global $logging;
-		
+        global $logging;
+
         //Default seeders
         $countSeeders = 0;
 
@@ -123,9 +123,9 @@ class torrent
             //Everything went OK
             if ($scrape["state"] == "ok")
             {
-				//Message
-				$logging->info("Scrape ".$scrape["state"].": ".$scrape["method"]." (S: ".$scrape["seeders"]." L:".$scrape["leechers"].") | ".$tracker);
-				
+                //Message
+                $logging->info("Scrape " . $scrape["state"] . ": " . $scrape["method"] . " (S: " . $scrape["seeders"] . " L:" . $scrape["leechers"] . ") | " . $tracker);
+
                 //Seeders & leechers
                 $this->scrapedData[] = array(
                     "tracker" => $tracker,
@@ -139,9 +139,9 @@ class torrent
             //Scrape failed
             else
             {
-				//Message
-				$logging->warning("Scrape failed: ".$scrape["method"]." | ".$scrape["state"]." | ".$tracker);
-				
+                //Message
+                $logging->warning("Scrape failed: " . $scrape["method"] . " | " . $scrape["state"] . " | " . $tracker);
+
                 //Empty seeders & leechers
                 $this->scrapedData[] = array(
                     "tracker" => $tracker,
@@ -161,17 +161,17 @@ class torrent
     //Insert data
     public function database($state = true, $imdb, $quality, $retriever, $reliability)
     {
-		global $logging;
-		
+        global $logging;
+
         //Open database connection
         Database();
 
         //Delete torrent
         if (!$state)
         {
-			//Message
-			$logging->error("Torrent removed: ".$this->hash);
-			
+            //Message
+            $logging->error("Torrent removed: " . $this->hash);
+
             sqlQueryi("DELETE FROM `data` WHERE `hash` = ?", array("s", $this->hash));
             sqlQueryi("DELETE FROM `trackers` WHERE `hash` = ?", array("s", $this->hash));
         }
@@ -183,7 +183,7 @@ class torrent
 
             //Torrent doesn't exist
             if (!$rowCount > 0)
-            {				
+            {
                 //Insert data
                 sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`,`reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
                     "ssssssss",
@@ -207,9 +207,9 @@ class torrent
                         $tracker["seeders"],
                         $tracker["update"]));
                 }
-				
-				//Message
-				$logging->info("Torrent added: ".$this->hash);
+
+                //Message
+                $logging->info("Torrent added: " . $this->hash);
             }
             //Torrent does exist
             else
@@ -246,10 +246,12 @@ class torrent
                             $tracker["update"]));
                     }
                 }
-				
-				//Message
-				$logging->info("Torrent updated: ".$this->hash);
+
+                //Message
+                $logging->info("Torrent updated: " . $this->hash);
             }
         }
     }
 }
+
+?>

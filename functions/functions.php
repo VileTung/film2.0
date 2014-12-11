@@ -8,8 +8,8 @@
 
 //Debug
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
- 
+ini_set("display_errors", 1);
+
 header("Content-Type: text/html; charset=utf-8");
 
 //Guzzle location
@@ -62,14 +62,14 @@ $client = new Client();
 //cURL
 function cURL($url)
 {
-	global $client;
-	
+    global $client;
+
     try
     {
         //Try
         $request = $client->createRequest("GET", $url, ["timeout" => 60, "cookies" => true]);
-        $response = $client->send($request);	
-		
+        $response = $client->send($request);
+
         //Return data
         return array(true, $response->getBody()->getContents());
     }

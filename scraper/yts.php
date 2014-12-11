@@ -51,17 +51,17 @@ class yts
                         //Process data
                         $scraper = new scraper($id);
                         $scraper->file($movie["TorrentUrl"], $movie["Quality"], "yts");
-						
-						//Get subtitle
-						self::subtitle($id);
+
+                        //Get subtitle
+                        self::subtitle($id);
 
                         //Message
                         $logging->info("YTS movie: " . $this->iMovie);
 
                         //Movie counter
                         $this->iMovie++;
-						
-						print("\n");
+
+                        print ("\n");
                     }
 
                     //Message
