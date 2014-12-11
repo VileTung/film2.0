@@ -76,23 +76,32 @@ class index
         $this->newURL["page"] = $page;
     }
 
-    private function sorting($sort)
+    private function sorting()
     {
-        //Sort order
-        if (isset($_GET["by"]) && $_GET["by"] == "DESC")
+        if (!empty($_GET["sort"]))
         {
-            $by = "DESC";
+            //Sort order
+            if (isset($_GET["by"]) && $_GET["by"] == "DESC")
+            {
+                $by = "DESC";
+            }
+            else
+            {
+                $by = "ASC";
+            }
+
+            //SQL
+            $this->query .= " ORDER BY `imdb`.`" . $_GET["sort"] . "` " . $by;
+
+            $this->newURL["sort"] = $_GET["sort"];
+            $this->newURL["by"] = $by;
         }
+        //Default
         else
         {
-            $by = "ASC";
+            //SQL
+            $this->query .= " ORDER BY `imdb`.`added` DESC";
         }
-
-        //SQL
-        $this->query .= " ORDER BY `imdb`.`" . $sort . "` " . $by;
-
-        $this->newURL["sort"] = $_GET["sort"];
-        $this->newURL["by"] = $by;
     }
 
     private function URL($type, $sort, $textG, $get, $extra, $upDown = true)
@@ -184,10 +193,7 @@ class index
         }
 
         //Order
-        if (!empty($_GET["sort"]))
-        {
-            self::sorting($_GET["sort"]);
-        }
+        self::sorting();
 
         //Remove genre from URL
         $this->genreURL = $this->newURL;
@@ -250,9 +256,9 @@ class index
         }
 
         //Necessary for the pager
-        if (isset($_GET["page"]) && $_GET["page"] != 1)
+        if (isset($_GET["page"]) && $_GET["page"] != 1 && !empty($_GET["page"]))
         {
-            $extra = ($movieCount) * 5;
+            $extra = 30 * ($_GET["page"] - 1);
         }
         else
         {
