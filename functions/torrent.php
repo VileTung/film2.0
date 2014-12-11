@@ -77,6 +77,9 @@ class torrent
 
         //Remove duplicates
         $this->trackers = array_unique($trackerList);
+		
+		//Return filename, for OpenSubtitles.org
+		return $this->movieName;
     }
 
     //We've got some trackers and hash

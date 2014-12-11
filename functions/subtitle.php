@@ -27,7 +27,7 @@ class subtitle
 		//Failed
 		if (!$state)
 		{
-			throw new Exception("Subtitle download failed (YIFY - " . $url . ")");
+			throw new Exception("Subtitle download failed (" . $url . ")");
 		}
 		
 		//Save subtitle

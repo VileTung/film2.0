@@ -70,7 +70,7 @@ if (php_sapi_name() == "cli") {
 			$logging = new loggen($log.$session.".txt");
 			
 			//Message
-			$logging->info("Starting '".$retriever."' (".$min." t/m ".$max.")!");
+			$logging->info("Starting '".$retriever."' (".$min." until ".$max.")!");
 			
 			//Initialize YTS
 			$yts = new yts();

@@ -29,6 +29,7 @@ class regex
 	{
 		$return["year"] = "~(\b(19\d{2}|20[01]\d)\b)~i";
 		$return["yify"] = "~<li(?:.*)data-id=\"(\d+)\"(?:.*)reply-rating(?:.*)>(\d+)</span>(?:.*)flag-(?:.*)>(?:.*)<span>(.*)</span>(?:.*)<a(?:.*)href=\"(.*)\"(?:.*)download~Ui";
+		$return["osId"] = "~servOC\((\d+)~i";
 		
 		return self::match($return[$regex],$string,$i,$ii);
 	}

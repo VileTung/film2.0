@@ -34,7 +34,7 @@ class scraper
 			//Message
 			$logging->info("Torrent");			
 			$torrent = new torrent;
-			$torrent->file($url);
+			$filename = $torrent->file($url);
 			
 			//Message
 			$logging->info("Scrape");			
@@ -44,6 +44,10 @@ class scraper
 			$logging->info("IMDB");			
 			$imdb = new imdb;
 			$imdb->getInfo($this->imdbId);
+			
+			//Get subtitle from OpenSubtitles
+			$oSubtitles = new openSubtitles();
+			$oSubtitles->retrieve($this->imdbId,$filename);
 			
 			//Message
 			$logging->info("Torrent DB");			
