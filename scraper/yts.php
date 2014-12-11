@@ -55,6 +55,9 @@ class yts
                         //Get subtitle
                         self::subtitle($id);
 
+                        //Update progress
+                        self::progress($startPage, $endPage, $this->iMovie);
+
                         //Message
                         $logging->info("YTS movie: " . $this->iMovie);
 
@@ -76,8 +79,20 @@ class yts
         }
     }
 
+    //Calculate progress
+    private function progress($start, $end, $current)
+    {
+        global $locker;
+
+        $total = (($end - $start) + 1) * 50;
+
+        $progress = ($current / $total) * 100;
+
+        $locker->update($progress);
+    }
+
     //Get subtitle
-    public function subtitle($id)
+    private function subtitle($id)
     {
         global $logging;
 

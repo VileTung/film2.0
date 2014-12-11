@@ -12,10 +12,10 @@ if (php_sapi_name() == "cli") {
 
 	require_once("functions/functions.php");
 
-	print("Pick one: 'yts': ");
+	print("Pick one: 'YTS': ");
 	$retriever = trim(fgets(STDIN));
 
-	if($retriever!="yts" && $retriever!="torrentz")
+	if($retriever!="YTS")
 	{
 		print("\nWrong input!\n");
 		exit;
@@ -61,7 +61,7 @@ if (php_sapi_name() == "cli") {
 	{
 		try{
 			//Locks a session
-			$locker = new locker();
+			$locker = new locker($retriever." searching (".$min." until ".$max.")");
 			
 			//Get created session
 			$session = $locker->getSession();

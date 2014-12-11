@@ -11,10 +11,10 @@ class locker
     private $session;
 
     //Constructor
-    public function __construct()
+    public function __construct($process)
     {
         global $cache;
-
+		
         //Generate session ID
         $this->session = $session = mt_rand(10000, 65535);
 
@@ -27,8 +27,18 @@ class locker
         {
             throw new Exception("Couldn't create a lock!");
         }
+		
+		//Database connection
+		Database();
+		
+		sqlQueryi("INSERT INTO `sessions` (`process`,`sessionId`,`progress`) VALUES (?,?,?)", array("sis",$process,$session,"0"));
     }
 
+	public function update($progress)
+	{
+		sqlQueryi("UPDATE `sessions` SET `progress` = ? WHERE `sessionId` = ?", array("si",round($progress),$this->session));
+	}
+	
     //Get session ID, don't know why..
     public function getSession()
     {

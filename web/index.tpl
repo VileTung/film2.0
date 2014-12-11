@@ -172,7 +172,7 @@
 					</li>
 					</ul>
 					</li>
-					<li><a href="#">Admin</a>
+					<li><a href="admin.php">Admin</a>
 					</li>
 				</ul>
 				<form class="navbar-form navbar-right" role="form" method="get" action="">

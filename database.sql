@@ -45,6 +45,17 @@ CREATE TABLE `imdb` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `sessions`;
+CREATE TABLE `sessions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `process` varchar(250) NOT NULL,
+  `sessionId` int(10) unsigned NOT NULL,
+  `progress` float unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sessionId` (`sessionId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `subtitle`;
 CREATE TABLE `subtitle` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
@@ -67,4 +78,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-12-09 10:24:32
+-- 2014-12-11 14:42:49
