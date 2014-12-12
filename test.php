@@ -6,8 +6,8 @@ require_once("functions/functions.php");
 try{
 $logging = new loggen($log."testSub.txt");
 
-$test = new yts();
-$test->subtitle("1790864");
+$test = new openSubtitles();
+$test->retrieve("2268458","The.Maze.Runner.2014.1080p.BluRay.x264.YIFY.mp4");
 } catch(Exception $e) {
     $logging->error($e->getMessage());
 }
