@@ -9,7 +9,8 @@
 class loggen
 {
     //Where do we need to place the log file?
-    private $filename;
+    private $filenameCSV;
+    private $filenameHTML;
 
     //Character between values (split values)
     private $separator = ",";
@@ -23,33 +24,35 @@ class loggen
     //Constructor
     public function __construct($file)
     {
-        $this->filename = $file;
+        $this->filenameCSV = $file.".txt";
+        $this->filenameHTML = $file.".html";
     }
 
     //Write log file
-    private function writeLog($level = "INFO", $colorCLI = "\033[01;37m", $value, $tag)
+    private function writeLog($level = "INFO", $colorCLI = "\033[01;37m", $colorHTML = "black", $value, $tag)
     {
         //Current datetime
         $datetime = date("Y-m-d H:i:s");
 
-        //Check if not file exits
-        if (!file_exists($this->filename))
+        //Check if CSV not file exits
+        if (!file_exists($this->filenameCSV))
         {
-            $headers = $this->header . "\n";
+            $headersCSV = $this->header . "\n";
         }
         //Else, we already have the headers
         else
         {
-            $headers = false;
+            $headersCSV = false;
         }
 
         //Open file
-        $openFile = fopen($this->filename, "a");
+        $openFileCSV = fopen($this->filenameCSV, "a");
+        $openFileHTML = fopen($this->filenameHTML, "a");
 
         //Now write the headers, if necessary
-        if ($headers)
+        if ($headersCSV)
         {
-            fwrite($openFile, $headers);
+            fwrite($openFileCSV, $headersCSV);
         }
 
         //Backtrace, to get the file and line
@@ -72,10 +75,17 @@ class loggen
             $file);
 
         //Place it in the file
-        fputcsv($openFile, $entry, $this->separator);
+        fputcsv($openFileCSV, $entry, $this->separator);
+		
+		//HTML line
+		$html = "<span style=\"color: ".$colorHTML."\">[" . $datetime . "] " . $function . "</span> " . $value . "<br />";
+		
+		//Write HTML
+		fwrite($openFileHTML, $html);
 
         //Close the file
-        fclose($openFile);
+        fclose($openFileCSV);
+        fclose($openFileHTML);
 
         //And finally, push it to the screen
         print ($colorCLI . "[" . $datetime . "] " . $function . "\033[0m: " . $value . "\n");
@@ -84,25 +94,25 @@ class loggen
     //Function for simple information messages
     public function info($value, $tag = self::defaultTag)
     {
-        self::writeLog("INFO", "\033[01;37m", $value, $tag);
+        self::writeLog("INFO", "\033[01;37m", "black", $value, $tag);
     }
 
     //Function for warning messages
     public function warning($value, $tag = self::defaultTag)
     {
-        self::writeLog("WARNING", "\033[01;33m", $value, $tag);
+        self::writeLog("WARNING", "\033[01;33m", "orange", $value, $tag);
     }
 
     //Function for error messages
     public function error($value, $tag = self::defaultTag)
     {
-        self::writeLog("ERROR", "\033[01;31m", $value, $tag);
+        self::writeLog("ERROR", "\033[01;31m", "red", $value, $tag);
     }
 
     //Function for debug messages
     public function debug($value, $tag = self::defaultTag)
     {
-        self::writeLog("DEBUG", "\033[00;37m", $value, $tag);
+        self::writeLog("DEBUG", "\033[00;37m", "grey", $value, $tag);
     }
 }
 
