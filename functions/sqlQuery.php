@@ -7,17 +7,17 @@
  */
 
 //MySQL connection
-function Database($verbinden = true)
+function Database($connect = true)
 {
     global $MySQLi;
 
     unset($GLOBALS["MySQLi"]);
 
-    $MySQLi = mysqli_connect("localhost", "root", "8206479Ef", "film2");
+    $MySQLi = mysqli_connect("localhost", "root", "8206479Ef", "film2.0");
 
-    if ($MySQLi->connect_errno)
+    if (!$MySQLi)
     {
-        die("Failed to connect to MySQL: (" . $MySQLi->connect_errno . ") " . $MySQLi->connect_error);
+        die("Failed to connect to MySQL");
     }
 
     //We need this
