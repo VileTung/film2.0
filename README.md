@@ -6,7 +6,8 @@ _Description: the new way of watching movies, just simple and plain! It's more l
 
 _How do I, as a developer, start working on the project?_ 
 
-1. _Use `./run.php` to start YTS searcher_
+1. _Use `./run.php` to start YTS searcher._
+2. _Use your browser and navite to `http://ipaddress/film2.0/web/`._
 
 ### Important note
 
@@ -23,14 +24,15 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ## Features
 
-1. _Get Torrents from YTS_
-2. _Get subtitles from YTS_
-2. _Get subtitles from OpenSubtitles.org_
-3. _Webinterface_
+1. _Get Torrents from YTS._
+2. _Get subtitles from YTS._
+3. _Get subtitles from OpenSubtitles.org._
+4. _Webinterface._
+5. _Monitor and start background jobs._
 
 ### Future
 
 > - Admin interface.
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
-> - Monitor background jobs, part of admin interface.
+> - Extend admin interface.

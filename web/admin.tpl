@@ -31,6 +31,12 @@
 				</button>
 				<a class="navbar-brand" href="./">Home</a>
 			</div>
+			<div id="navbar" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="admin.php">Admin</a>
+					</li>
+				</ul>
+			</div>
 			<!--/.navbar-collapse -->
 		</div>
 	</nav>
@@ -151,7 +157,7 @@
 		})
 
 		$(function() {
-			$("[data-toggle='tooltip']").tooltip();
+			$("[data-toggle=\"tooltip\"]").tooltip();
 		});
 	</script>
 </body>

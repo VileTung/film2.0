@@ -34,7 +34,7 @@ class admin
 
         //Random number
         $unique = mt_rand(10000, 65535);
-		
+
         //Command
         $cmd = "cd /var/www/film2.0 && ./run.php YTS " . $_POST["start"] . " " . $_POST["end"];
 
@@ -46,26 +46,26 @@ class admin
 
         //chmod, otherwise it will fail
         chmod($cache . $unique, 0755);
-		
-		//Only for debugging purposes
-		//$logging = $cache."output_".$unique.".txt";
-		//$pid = $cache."pid_".$unique.".txt";
-		
+
+        //Only for debugging purposes
+        //$logging = $cache."output_".$unique.".txt";
+        //$pid = $cache."pid_".$unique.".txt";
+
         //Execute and start the process!
         exec(sprintf("%s > /dev/null 2>/dev/null &", $command));
-		//exec(sprintf("%s > %s 2>&1 & echo $! >> %s", $command, $logging, $pid)); //Only for debugging purposes
-		
+        //exec(sprintf("%s > %s 2>&1 & echo $! >> %s", $command, $logging, $pid)); //Only for debugging purposes
+
         $success = array("state" => true, "message" => "Successfully started a new process!");
 
         //Redirect, we want to update the page again
-        //header("refresh:2;url=admin.php");
+        header("refresh:2;url=admin.php");
     }
 
     //Show HTML
     public function show()
     {
         global $cache;
-		
+
         //Default, no message bar needed
         $success = array("state" => false, "message" => false);
         $error = array("state" => false, "message" => false);
@@ -93,8 +93,8 @@ class admin
             //Redirect, we want to lose the $_GET["delete"] in the URL
             header("refresh:2;url=admin.php");
         }
-		
-		//Stop a session
+
+        //Stop a session
         if (isset($_GET["kill"]) && is_numeric($_GET["kill"]))
         {
             //Delete lock file
@@ -102,18 +102,18 @@ class admin
             {
                 unlink($cache . "lock_" . $_GET["kill"]);
             }
-			
-			//Update state
+
+            //Update state
             sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `pid` = ?", array(
                 "ssi",
                 "Aborted",
                 date("Y-m-d H:i:s"),
                 $_GET["kill"]));
-			
-			//System kill
-			exec("kill -9 ".$_GET["kill"]);
-			
-			$success = array("state" => true, "message" => "Successfully killed the process (" . $_GET["kill"] . ")!");
+
+            //System kill
+            exec("kill -9 " . $_GET["kill"]);
+
+            $success = array("state" => true, "message" => "Successfully killed the process (" . $_GET["kill"] . ")!");
 
             //Redirect, we want to lose the $_GET["delete"] in the URL
             header("refresh:2;url=admin.php");
