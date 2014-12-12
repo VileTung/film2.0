@@ -126,25 +126,28 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="myModalLabel">Confirm Stop</h4>
+					<h4 class="modal-title" id="myModalLabel">Confirm Stop/Kill</h4>
 				</div>
 				<div class="modal-body">
 					<p>You are about to stop this session, this procedure is irreversible.</p>
+					<p>Stop is a friendly way of stopping the process, while kill is not.</p>
 					<p>Do you want to proceed?</p>
 					<p class="debug-url"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<a href="#" class="btn btn-danger danger">Delete</a>
+					<a href="#" class="btn btn-warning warning">Stop</a>
+					<a href="#" class="btn btn-danger danger">Kill</a>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
 		$("#confirm-delete").on("show.bs.modal", function(e) {
-			$(this).find(".danger").attr("href", $(e.relatedTarget).data("href"));
+			$(this).find(".danger").attr("href", "admin.php?kill=" + $(e.relatedTarget).data("pid"));
+			$(this).find(".warning").attr("href", "admin.php?delete=" + $(e.relatedTarget).data("session"));
 
-			$(".debug-url").html("Delete URL: <strong>" + $(this).find(".danger").attr("href") + "</strong>");
+			$(".debug-url").html("Delete URL: <strong>" + $(this).find(".danger").attr("href") + "</strong><br />Kill URL: <strong>" + $(this).find(".warning").attr("href") + "</strong>");
 		})
 
 		$(function() {

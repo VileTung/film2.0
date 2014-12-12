@@ -31,9 +31,10 @@ class locker
         //Database connection
         Database();
 
-        sqlQueryi("INSERT INTO `sessions` (`process`,`sessionId`,`progress`,`start`,`state`) VALUES (?,?,?,?,?)", array(
-            "sisss",
+        sqlQueryi("INSERT INTO `sessions` (`process`,`pid`,`sessionId`,`progress`,`start`,`state`) VALUES (?,?,?,?,?,?)", array(
+            "siisss",
             $process,
+            getmypid(),
             $session,
             "0",
             date("Y-m-d H:i:s"),
