@@ -20,7 +20,7 @@
 
 <body>
 
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<nav class="navbar navbar-default navbar-static-top" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -45,26 +45,47 @@
 		<div class="page-header">
 			<h1>Film2.0 - Administration!</h1>
 		</div>
-		
+
 		<div class="jumbotron">
-		<if:isSuccess>
-			<div class="alert alert-success" role="alert">
-				<strong>Well done!</strong> You successfully read this important alert message.
-			</div>
+			<if:isSuccess>
+				<div class="alert alert-success" role="alert">
+					<tag:success />
+				</div>
 			</if:isSuccess>
 			<if:isError>
-			<div class="alert alert-danger" role="alert">
-				<strong>Oh snap!</strong> Change a few things up and try submitting again.
-			</div>
+				<div class="alert alert-danger" role="alert">
+					<tag:error />
+				</div>
 			</if:isError>
+			<form role="form" method="post">
+				<div class="form-group">
+					<label for="process">Process:</label>
+					<select name="process" class="form-control" id="process">
+						<option value="YTS">YTS</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="start">Start at page:</label>
+					<input type="number" name="start" class="form-control" id="start" placeholder="Start">
+				</div>
+				<div class="form-group">
+					<label for="end">Stop at page:</label>
+					<input type="number" name="end" class="form-control" id="end" placeholder="End">
+				</div>
+				<button type="submit" class="btn btn-default">Submit</button>
+			</form>
 			<div class="row">
 				<div class="col-md-12">
 					<table class="table table-striped">
 						<thead>
 							<tr>
 								<th>Process</th>
+								<th>State</th>
 								<th>Progress</th>
-								<th>#</th>
+								<th>Start</th>
+								<th>End</th>
+								<th>Log</th>
+								<th>Kill</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -74,12 +95,23 @@
 										<tag:processes[].process />
 									</td>
 									<td>
+										<tag:processes[].state />
+									</td>
+									<td>
 										<div class="progress" style="margin-bottom: 0px;">
-											<div style="width: <tag:processes[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:processes[].progress />" role="progressbar" class="progress-bar <tag:processes[].class />"><span class="sr-only"><tag:processes[].progress />% Complete</span>
+											<div data-toggle="tooltip" title="Complete: <tag:processes[].progress />%" style="width: <tag:processes[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:processes[].progress />" role="progressbar" class="progress-bar <tag:processes[].class />"><span class="sr-only"><tag:processes[].progress />% complete</span>
 											</div>
 										</div>
 									</td>
-									<td><a data-href="admin.php?delete=<tag:processes[].sessionId />" data-toggle="modal" data-target="#confirm-delete" href="#">Stop</a>
+									<td>
+										<tag:processes[].start />
+									</td>
+									<td>
+										<tag:processes[].end />
+									</td>
+									<td><a target="_blank" href="./../log/<tag:processes[].sessionId />.html">Click</a>
+									</td>
+									<td><tag:processes[].working />
 									</td>
 								</tr>
 							</loop:processes>
@@ -114,6 +146,10 @@
 
 			$(".debug-url").html("Delete URL: <strong>" + $(this).find(".danger").attr("href") + "</strong>");
 		})
+
+		$(function() {
+			$("[data-toggle='tooltip']").tooltip();
+		});
 	</script>
 </body>
 

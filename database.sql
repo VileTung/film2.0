@@ -51,6 +51,9 @@ CREATE TABLE `sessions` (
   `process` varchar(250) NOT NULL,
   `sessionId` int(10) unsigned NOT NULL,
   `progress` float unsigned NOT NULL,
+  `state` varchar(10) NOT NULL,
+  `start` datetime NOT NULL,
+  `end` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `sessionId` (`sessionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -78,4 +81,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-12-11 14:42:49
+-- 2014-12-12 10:12:21
