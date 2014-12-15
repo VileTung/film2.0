@@ -55,8 +55,11 @@ function fatalError()
 	}
 }
 
-//Register the functions
-register_shutdown_function("fatalError");
-set_error_handler("errorHandling");
+//Register the functions, only in CLI
+if (php_sapi_name() == "cli")
+{
+	register_shutdown_function("fatalError");
+	set_error_handler("errorHandling");
+}
 
 ?>
