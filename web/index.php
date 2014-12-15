@@ -6,8 +6,6 @@
  * @info Web interface
  */
 
- $time_start = microtime(true);
- 
 //Debug
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -439,11 +437,5 @@ class index
 
 $show = new index();
 $show->show();
-
-
-$time_end = microtime(true);
-$time = $time_end - $time_start;
-
-echo "Did nothing in $time seconds\n";
 
 ?>
