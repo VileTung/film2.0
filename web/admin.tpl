@@ -101,7 +101,7 @@
 										<tag:processes[].process />
 									</td>
 									<td>
-										<tag:processes[].state />
+										<span style="color: <tag:processes[].active />"><tag:processes[].state /></span>
 									</td>
 									<td>
 										<div class="progress" style="margin-bottom: 0px;">

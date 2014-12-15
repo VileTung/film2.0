@@ -131,6 +131,18 @@ class admin
 
         foreach ($result as $key => $value)
         {
+			$process = exec("ps cax | grep ".$value["pid"]);
+			
+			//Check if PID is still active
+			if(!empty($process))
+			{
+				$result[$key]["active"] = "green";
+			}
+			else
+				{
+				$result[$key]["active"] = "red";
+			}
+			
             //Remove session entry?
             if ($value["state"] == "Working")
             {

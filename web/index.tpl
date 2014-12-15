@@ -234,7 +234,6 @@
 							</div>
 							<div class="modal-body">
 								<h6><tag:movies[].runtime /> min, <tag:movies[].rating />, <tag:movies[].genres /></h6>
-								<if:subtitle>
 								<div class="btn-group pull-right">
 									<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 										Subtitle(s) <span class="caret"></span>
@@ -249,40 +248,39 @@
 										</loop:movies[].subtitles>
 									</ul>
 								</div>
-								</if:subtitle>
-							<p>
-								<tag:movies[].description />
-								<div class="row">
-									<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-										<table class="table table-condensed" style="font-size: 0.7em">
-											<thead>
-												<tr>
-													<th>#</th>
-													<th>Quality</th>
-													<th>Size</th>
-													<th>State</th>
-												</tr>
-											</thead>
-											<tbody>
-												<loop:movies[].torrents>
+								<p>
+									<tag:movies[].description />
+									<div class="row">
+										<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+											<table class="table table-condensed" style="font-size: 0.7em">
+												<thead>
 													<tr>
-														<td><a href="<tag:movies[].torrents[].url />" title="Get Magnetlink">Get</a>
-														</td>
-														<td>
-															<tag:movies[].torrents[].quality />
-														</td>
-														<td>
-															<tag:movies[].torrents[].size />
-														</td>
-														<td>
-															<tag:movies[].torrents[].state />
-														</td>
+														<th>#</th>
+														<th>Quality</th>
+														<th>Size</th>
+														<th>State</th>
 													</tr>
-												</loop:movies[].torrents>
-											</tbody>
-										</table>
+												</thead>
+												<tbody>
+													<loop:movies[].torrents>
+														<tr>
+															<td><a href="<tag:movies[].torrents[].url />" title="Get Magnetlink">Get</a>
+															</td>
+															<td>
+																<tag:movies[].torrents[].quality />
+															</td>
+															<td>
+																<tag:movies[].torrents[].size />
+															</td>
+															<td>
+																<tag:movies[].torrents[].state />
+															</td>
+														</tr>
+													</loop:movies[].torrents>
+												</tbody>
+											</table>
+										</div>
 									</div>
-								</div>
 								</p>
 							</div>
 							<div class="modal-footer">
