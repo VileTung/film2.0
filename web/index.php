@@ -322,9 +322,13 @@ class index
                         //URL
                         $trackersURL .= "&tr=" . urlencode($value["tracker"]);
                     }
-
+					
                     //Calculate state
-                    if (($avg / $count) > 2)
+					if($avg==0)
+					{
+						$state = "Dead";
+					}
+                    elseif (($avg / $count) > 2)
                     {
                         $state = "Good";
                     }

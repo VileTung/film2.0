@@ -32,7 +32,11 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ### Future
 
-> - Admin interface.
+> - Admin interface (extend).
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
-> - Extend admin interface.
+> - Caching + AJaX refreshing.
+
+### Self notes
+
+> - Don't display page after submitting, cleaning or deleting in admin.php.
