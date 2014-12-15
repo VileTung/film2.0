@@ -6,6 +6,8 @@
  * @info Web interface
  */
 
+ $time_start = microtime(true);
+ 
 //Debug
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -396,32 +398,32 @@ class index
         //URL for title search
         if (isset($this->newURL["genre"]))
         {
-            $this->bTemplate->set('genre', true, true);
+            $this->bTemplate->set("genre", true, true);
             $this->bTemplate->set("genreURL", $this->newURL["genre"]);
         }
         else
         {
-            $this->bTemplate->set('genre', false, true);
+            $this->bTemplate->set("genre", false, true);
         }
 
         if (isset($this->newURL["sort"]))
         {
-            $this->bTemplate->set('sort', true, true);
+            $this->bTemplate->set("sort", true, true);
             $this->bTemplate->set("sortURL", $this->newURL["sort"]);
         }
         else
         {
-            $this->bTemplate->set('sort', false, true);
+            $this->bTemplate->set("sort", false, true);
         }
 
         if (isset($this->newURL["by"]))
         {
-            $this->bTemplate->set('by', true, true);
+            $this->bTemplate->set("by", true, true);
             $this->bTemplate->set("byURL", $this->newURL["by"]);
         }
         else
         {
-            $this->bTemplate->set('by', false, true);
+            $this->bTemplate->set("by", false, true);
         }
 
         //Pager
@@ -437,5 +439,11 @@ class index
 
 $show = new index();
 $show->show();
+
+
+$time_end = microtime(true);
+$time = $time_end - $time_start;
+
+echo "Did nothing in $time seconds\n";
 
 ?>

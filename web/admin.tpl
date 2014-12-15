@@ -7,6 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Film2.0 - Just watch!</title>
 
+	<link rel="icon" href="images/icon.png">
+	
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 
