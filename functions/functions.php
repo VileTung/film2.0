@@ -41,6 +41,7 @@ $subtitle = $root . "subtitle/";
 
 //Load additional functions
 require_once ($functions . "cache.php");
+require_once ($functions . "error.php");
 require_once ($functions . "imdb.php");
 require_once ($functions . "lightbenc.php");
 require_once ($functions . "lock.php");
