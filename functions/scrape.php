@@ -273,8 +273,11 @@ function scrape($url, $info_hash, $method = "scrape")
                 "method" => $urlScheme . ":" . $method);
         }
 
+		//Start lightBenc
+        $lightBenc = new lightbenc;
+		
         //Decode content
-        $bDecoded = lightBenc($content, "decode");
+		$bDecoded = $lightBenc->bdecode($content);
 
         //Decoding failed
         if (!is_array($bDecoded))

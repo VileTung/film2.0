@@ -49,6 +49,7 @@ DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `process` varchar(250) NOT NULL,
+  `pid` int(10) unsigned NOT NULL,
   `sessionId` int(10) unsigned NOT NULL,
   `progress` float unsigned NOT NULL,
   `state` varchar(10) NOT NULL,
@@ -81,4 +82,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-12-12 10:12:21
+-- 2014-12-12 19:09:59

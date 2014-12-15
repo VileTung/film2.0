@@ -30,7 +30,7 @@ class admin
     //Start a new process
     private function startProcess()
     {
-        global $cache, $success;
+        global $cache, log, $success;
 
         //Random number
         $unique = mt_rand(10000, 65535);
@@ -46,14 +46,12 @@ class admin
 
         //chmod, otherwise it will fail
         chmod($cache . $unique, 0755);
-
-        //Only for debugging purposes
-        //$logging = $cache."output_".$unique.".txt";
-        //$pid = $cache."pid_".$unique.".txt";
+		
+		//Error log file
+		$error = $log . "error_" . $unique;
 
         //Execute and start the process!
-        exec(sprintf("%s > /dev/null 2>/dev/null &", $command));
-        //exec(sprintf("%s > %s 2>&1 & echo $! >> %s", $command, $logging, $pid)); //Only for debugging purposes
+        exec(sprintf("%s > /dev/null 2> %s &", $command, $error));
 
         $success = array("state" => true, "message" => "Successfully started a new process!");
 
