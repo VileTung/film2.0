@@ -24,14 +24,30 @@ function Database($connect = true)
     $GLOBALS["MySQLi"] = $MySQLi;
 }
 
-function sqlQueryi($query, $parameters = false, $result = false)
+function sqlQueryi($query, $parameters = false, $result = false, $useCache = true)
 {
-    global $MySQLi;
+    global $MySQLi, $cache, $cacheExpire;
+
+    $md5Query = md5($query . serialize($parameters));
+
+    //Check if we want cache
+    if ($useCache && $result)
+    {
+        //Check if we have cache
+        if (file_exists($cache . "sql_" . $md5Query) && filemtime($cache . "sql_" . $md5Query) > filemtime($cacheExpire))
+        {
+            //Valid cache, read it
+            $data = unserialize(file_get_contents($cache . "sql_" . $md5Query));
+
+            //Return and quit this function
+            return array($data[0], $data[1]);
+        }
+    }
 
     //Make sure we have a connection
     if (!$MySQLi)
     {
-        return ("There is no active MySQL connection!");
+        die("There is no active MySQL connection!");
     }
 
     //Prepare SQL
@@ -40,7 +56,7 @@ function sqlQueryi($query, $parameters = false, $result = false)
     //Error
     if (!$execute)
     {
-        return ("SQLi error: " . $MySQLi->error . "\nQuery: " . $query);
+        die("SQLi error: " . $MySQLi->error . "\nQuery: " . $query);
     }
 
     if ($parameters)
@@ -48,7 +64,7 @@ function sqlQueryi($query, $parameters = false, $result = false)
         //Make sure everything is correct
         if (strlen($parameters[0]) != (count($parameters) - 1))
         {
-            return ("Parameters do not match, " . strlen($parameters[0]) . " & " . (count($parameters) - 1));
+            die("Parameters do not match, " . strlen($parameters[0]) . " & " . (count($parameters) - 1));
         }
 
         //Place parameters in a new array as reference
@@ -82,6 +98,16 @@ function sqlQueryi($query, $parameters = false, $result = false)
         while ($data = $result->fetch_array(MYSQLI_ASSOC))
         {
             $return[] = $data;
+        }
+
+        //Cache
+        if ($useCache)
+        {
+            //Data
+            $data = array($result->num_rows, $return);
+
+            //Save
+            file_put_contents($cache . "sql_" . $md5Query, serialize($data), LOCK_EX);
         }
 
         //Return

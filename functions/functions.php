@@ -34,6 +34,7 @@ $root = dirname(dirname(__file__)) . "/";
 
 $cache = $root . "cache/";
 $functions = $root . "functions/";
+$cacheExpire = $functions . "cache";
 $log = $root . "log/";
 $poster = $root . "poster/";
 $scraper = $root . "scraper/";

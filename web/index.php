@@ -12,7 +12,7 @@ ini_set("display_errors", 1);
 
 require_once ("bTemplate.php");
 require_once ("pager.php");
-require_once ("./../functions/sqlQuery.php");
+require_once ("./../functions/functions.php");
 
 class index
 {

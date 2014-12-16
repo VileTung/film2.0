@@ -7,6 +7,30 @@ $(function() {
 	$("[data-toggle=\"tooltip\"]").tooltip();
 });
 
+/* Mark cache as old */
+$(document).on("click","#clearCache", function() {
+	var url = $(this).attr("data-href");
+
+	//Send data
+	var posting = $.post(url, {
+		markCache: "cache",
+	});
+
+	//Put the results in a div
+	posting.done(function(data) {
+		processData(data);
+	}, "json");
+
+	return false;
+});
+
+/* Refresh page */
+$(document).on("click","#refresh", function() {
+	refresh();
+
+	return false;
+});
+
 /* Clean */
 $(document).on("click",".clean", function() {
 	var sessionId = $(this).attr("data-session");
@@ -26,7 +50,7 @@ $(document).on("click",".clean", function() {
 });
 
 /* Stop */
-$(".warning").click(function() {
+$(document).on("click",".warning", function() {
 	var sessionId = $(this).attr("data-session");
 	var url = $(this).attr("data-href");
 
@@ -46,7 +70,7 @@ $(".warning").click(function() {
 });
 
 /* Kill */
-$(".danger").click(function() {
+$(document).on("click",".danger", function() {
 	var pid = $(this).attr("data-pid");
 	var url = $(this).attr("data-href");
 
@@ -66,7 +90,7 @@ $(".danger").click(function() {
 });
 
 /* Start */
-$("#startProcess").submit(function(event) {
+$(document).on("submit","#startProcess", function(event) {
 	//Stop form from submitting normally
 	event.preventDefault();
 
@@ -77,14 +101,15 @@ $("#startProcess").submit(function(event) {
 		endD = $form.find("input[name='end']").val(),
 		url = $form.attr("action");
 	
-	console.log(processD+ " " +startD+ " " + endD);
-
 	//Send data
 	var posting = $.post(url, {
 		process: processD,
 		start: startD,
 		end: endD
 	});
+
+	/* Reset form */
+	$("#startProcess").trigger("reset");
 
 	//Put the results in a div
 	posting.done(function(data) {

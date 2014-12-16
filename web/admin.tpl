@@ -25,7 +25,7 @@
 
 <body>
 
-	<nav class="navbar navbar-default navbar-static-top" role="navigation">
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -39,6 +39,10 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="admin.php">Admin</a>
+					</li>
+					<li><a id="refresh" href="#">Refresh</a>
+					</li>
+					<li><a id="clearCache" data-href="action.php" href="#">Clear Cache</a>
 					</li>
 				</ul>
 			</div>
