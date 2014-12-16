@@ -24,19 +24,19 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ## Features
 
-1. _Get Torrents from YTS._
-2. _Get subtitles from YTS._
-3. _Get subtitles from OpenSubtitles.org._
-4. _Webinterface._
-5. _Monitor and start background jobs._
+* _Get Torrents from YTS._
+* _Get subtitles from YTS._
+* _Get subtitles from OpenSubtitles.org._
+* _Webinterface._
+* _Monitor and start background jobs._
 
 ### Future
 
 > - Admin interface (extend).
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
-> - Caching + AJaX refreshing.
+> - Main page caching.
 
 ### Self notes
 
-> - Don't display page after submitting, cleaning or deleting in admin.php.
+> - None ATM.

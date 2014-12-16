@@ -140,9 +140,6 @@ elseif (isset($_POST["refresh"]) && $_POST["refresh"] == "process")
         print ("<td>" . $value["working"] . "</td>");
         print ("</tr>");
     }
-	
-	//JavaScript need to be reloaded too..
-	//print("<script src=\"js/admin.js\"></script>");
 }
 else
 {
