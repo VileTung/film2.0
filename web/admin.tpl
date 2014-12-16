@@ -11,6 +11,9 @@
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Extra -->
+	<link href="css/table.min.css" rel="stylesheet">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -97,6 +100,7 @@
 					</div>
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
+				<br />
 				<div class="row">
 					<div class="col-md-12">
 						<table class="table table-striped">
