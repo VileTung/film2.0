@@ -58,67 +58,69 @@
 			<div id="message" class="alert" style="display: none;" role="alert">
 				Default text
 			</div>
-			<form role="form" method="post" action="action.php" id="startProcess">
-				<div class="form-group">
-					<label for="process">Process:</label>
-					<select name="process" class="form-control" id="process">
-						<option value="YTS">YTS</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="start">Start at page:</label>
-					<input type="number" name="start" class="form-control" id="start" placeholder="Start" required="true">
-				</div>
-				<div class="form-group">
-					<label for="end">Stop at page:</label>
-					<input type="number" name="end" class="form-control" id="end" placeholder="End" required="true">
-				</div>
-				<button type="submit" class="btn btn-default">Submit</button>
-			</form>
-			<div class="row">
-				<div class="col-md-12">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Process</th>
-								<th>State</th>
-								<th>Progress</th>
-								<th>Start</th>
-								<th>End</th>
-								<th>Log</th>
-								<th>Kill</th>
-							</tr>
-						</thead>
-						<tbody>
-							<loop:processes>
+			<div id="page">
+				<form role="form" method="post" action="action.php" id="startProcess">
+					<div class="form-group">
+						<label for="process">Process:</label>
+						<select name="process" class="form-control" id="process">
+							<option value="YTS">YTS</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="start">Start at page:</label>
+						<input type="number" name="start" class="form-control" id="start" placeholder="Start" required="true">
+					</div>
+					<div class="form-group">
+						<label for="end">Stop at page:</label>
+						<input type="number" name="end" class="form-control" id="end" placeholder="End" required="true">
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form>
+				<div class="row">
+					<div class="col-md-12">
+						<table class="table table-striped">
+							<thead>
 								<tr>
-									<td>
-										<tag:processes[].process />
-									</td>
-									<td>
-										<span style="color: <tag:processes[].active />"><tag:processes[].state /></span>
-									</td>
-									<td>
-										<div class="progress" style="margin-bottom: 0px;">
-											<div data-toggle="tooltip" title="Complete: <tag:processes[].progress />%" style="width: <tag:processes[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:processes[].progress />" role="progressbar" class="progress-bar <tag:processes[].class />"><span class="sr-only"><tag:processes[].progress />% complete</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<tag:processes[].start />
-									</td>
-									<td>
-										<tag:processes[].end />
-									</td>
-									<td><a target="_blank" href="./../log/<tag:processes[].sessionId />.html">Click</a>
-									</td>
-									<td>
-										<tag:processes[].working />
-									</td>
+									<th>Process</th>
+									<th>State</th>
+									<th>Progress</th>
+									<th>Start</th>
+									<th>End</th>
+									<th>Log</th>
+									<th>Kill</th>
 								</tr>
-							</loop:processes>
-						</tbody>
-					</table>
+							</thead>
+							<tbody id="list">
+								<loop:processes>
+									<tr>
+										<td>
+											<tag:processes[].process />
+										</td>
+										<td>
+											<span style="color: <tag:processes[].active />"><tag:processes[].state /></span>
+										</td>
+										<td>
+											<div class="progress" style="margin-bottom: 0px;">
+												<div data-toggle="tooltip" title="Complete: <tag:processes[].progress />%" style="width: <tag:processes[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:processes[].progress />" role="progressbar" class="progress-bar <tag:processes[].class />"><span class="sr-only"><tag:processes[].progress />% complete</span>
+												</div>
+											</div>
+										</td>
+										<td>
+											<tag:processes[].start />
+										</td>
+										<td>
+											<tag:processes[].end />
+										</td>
+										<td><a target="_blank" href="./../log/<tag:processes[].sessionId />.html">Click</a>
+										</td>
+										<td>
+											<tag:processes[].working />
+										</td>
+									</tr>
+								</loop:processes>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -186,7 +188,7 @@
 				processData(data);
 			}, "json");
 
-			$('#confirm-delete').modal('toggle');
+			$("#confirm-delete").modal("toggle");
 
 			return false;
 		});
@@ -206,7 +208,7 @@
 				processData(data);
 			}, "json");
 
-			$('#confirm-delete').modal('toggle');
+			$("#confirm-delete").modal("toggle");
 
 			return false;
 		});
@@ -216,7 +218,7 @@
 			//Stop form from submitting normally
 			event.preventDefault();
 
-			//Get values:
+			//Get values
 			var $form = $(this),
 				processD = $form.find("select[name='process']").val(),
 				startD = $form.find("input[name='start']").val(),
@@ -236,17 +238,38 @@
 			}, "json");
 		});
 
+		/* Reload data */
+		function refresh() {
+			$("#list").empty().append("<span>Loading...</span>");
+
+			//Send data
+			var posting = $.post("action.php", {
+				refresh: "process"
+			});
+
+			//Put the results in the table
+			posting.done(function(data) {
+				$("#list").empty().html(data);
+			});
+		}
+
 		function processData(data) {
 			//Retuned message in div
 			$("#message").empty().append(data.message);
 			$("#message").removeClass("alert-danger alert-success").addClass(data.state);
 
-			//Show div
-			$("#message").fadeIn(2000, function() {
-				$("#message").delay(2000).fadeOut(2000);
+			//Show message, hide page
+			$("#page").fadeOut("slow", function() {
+				$("#message").fadeIn("slow", function() {
+					$("#message").delay(1000).fadeOut("slow", function() {
+						$("#page").fadeIn("slow");
+						refresh();
+					});
+
+				});
+
 			});
 		}
 	</script>
 </body>
-
 </html>

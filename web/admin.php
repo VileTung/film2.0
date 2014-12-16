@@ -28,26 +28,26 @@ class admin
         Database();
     }
 
-    //Show HTML
-    public function show()
+    //Get processes
+    public function getProcess()
     {
         //Get all sessions
         list($rowCount, $result) = sqlQueryi("SELECT * FROM `sessions`", false, true);
 
         foreach ($result as $key => $value)
         {
-			$process = exec("ps cax | grep ".$value["pid"]);
-			
-			//Check if PID is still active
-			if(!empty($process))
-			{
-				$result[$key]["active"] = "green";
-			}
-			else
-				{
-				$result[$key]["active"] = "red";
-			}
-			
+            $process = exec("ps cax | grep " . $value["pid"]);
+
+            //Check if PID is still active
+            if (!empty($process))
+            {
+                $result[$key]["active"] = "green";
+            }
+            else
+            {
+                $result[$key]["active"] = "red";
+            }
+
             //Remove session entry?
             if ($value["state"] == "Working")
             {
@@ -73,6 +73,14 @@ class admin
             }
         }
 
+        return $result;
+    }
+
+    //Show HTML
+    public function show()
+    {
+        $result = self::getProcess();
+
         $this->bTemplate->set("processes", $result);
 
         //Print the template!
@@ -80,7 +88,10 @@ class admin
     }
 }
 
-$show = new admin();
-$show->show();
+if (!defined("action.php"))
+{
+    $show = new admin();
+    $show->show();
+}
 
 ?>
