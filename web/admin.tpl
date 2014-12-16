@@ -8,7 +8,7 @@
 	<title>Film2.0 - Just watch!</title>
 
 	<link rel="icon" href="images/icon.png">
-	
+
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -55,17 +55,10 @@
 		</div>
 
 		<div class="jumbotron">
-			<if:isSuccess>
-				<div class="alert alert-success" role="alert">
-					<tag:success />
-				</div>
-			</if:isSuccess>
-			<if:isError>
-				<div class="alert alert-danger" role="alert">
-					<tag:error />
-				</div>
-			</if:isError>
-			<form role="form" method="post">
+			<div id="message" class="alert" style="display: none;" role="alert">
+				Default text
+			</div>
+			<form role="form" method="post" action="action.php" id="startProcess">
 				<div class="form-group">
 					<label for="process">Process:</label>
 					<select name="process" class="form-control" id="process">
@@ -74,11 +67,11 @@
 				</div>
 				<div class="form-group">
 					<label for="start">Start at page:</label>
-					<input type="number" name="start" class="form-control" id="start" placeholder="Start">
+					<input type="number" name="start" class="form-control" id="start" placeholder="Start" required="true">
 				</div>
 				<div class="form-group">
 					<label for="end">Stop at page:</label>
-					<input type="number" name="end" class="form-control" id="end" placeholder="End">
+					<input type="number" name="end" class="form-control" id="end" placeholder="End" required="true">
 				</div>
 				<button type="submit" class="btn btn-default">Submit</button>
 			</form>
@@ -119,7 +112,8 @@
 									</td>
 									<td><a target="_blank" href="./../log/<tag:processes[].sessionId />.html">Click</a>
 									</td>
-									<td><tag:processes[].working />
+									<td>
+										<tag:processes[].working />
 									</td>
 								</tr>
 							</loop:processes>
@@ -137,10 +131,9 @@
 					<h4 class="modal-title" id="myModalLabel">Confirm Stop/Kill</h4>
 				</div>
 				<div class="modal-body">
-					<p>You are about to stop this session, this procedure is irreversible.</p>
-					<p>Stop is a friendly way of stopping the process, while kill is not.</p>
+					<p>You are about to stop or kill this session, this procedure is irreversible.</p>
+					<p>Stop is a friendly way of stopping the process, while kill is not so friendly.</p>
 					<p>Do you want to proceed?</p>
-					<p class="debug-url"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -152,15 +145,107 @@
 	</div>
 	<script type="text/javascript">
 		$("#confirm-delete").on("show.bs.modal", function(e) {
-			$(this).find(".danger").attr("href", "admin.php?kill=" + $(e.relatedTarget).data("pid"));
-			$(this).find(".warning").attr("href", "admin.php?delete=" + $(e.relatedTarget).data("session"));
-
-			$(".debug-url").html("Delete URL: <strong>" + $(this).find(".danger").attr("href") + "</strong><br />Kill URL: <strong>" + $(this).find(".warning").attr("href") + "</strong>");
+			$(this).find(".danger").attr("data-href", "action.php").attr("data-pid", $(e.relatedTarget).data("pid"));
+			$(this).find(".warning").attr("data-href", "action.php").attr("data-session", $(e.relatedTarget).data("session"));
 		})
 
 		$(function() {
 			$("[data-toggle=\"tooltip\"]").tooltip();
 		});
+
+		/* Clean */
+		$(".clean").click(function() {
+			var sessionId = $(this).attr("data-session");
+			var url = $(this).attr("data-href");
+
+			//Send data
+			var posting = $.post(url, {
+				clean: sessionId,
+			});
+
+			//Put the results in a div
+			posting.done(function(data) {
+				processData(data);
+			}, "json");
+
+			return false;
+		});
+
+		/* Stop */
+		$(".warning").click(function() {
+			var sessionId = $(this).attr("data-session");
+			var url = $(this).attr("data-href");
+
+			//Send data
+			var posting = $.post(url, {
+				stop: sessionId,
+			});
+
+			//Put the results in a div
+			posting.done(function(data) {
+				processData(data);
+			}, "json");
+
+			$('#confirm-delete').modal('toggle');
+
+			return false;
+		});
+
+		/* Kill */
+		$(".danger").click(function() {
+			var pid = $(this).attr("data-pid");
+			var url = $(this).attr("data-href");
+
+			//Send data
+			var posting = $.post(url, {
+				kill: pid,
+			});
+
+			//Put the results in a div
+			posting.done(function(data) {
+				processData(data);
+			}, "json");
+
+			$('#confirm-delete').modal('toggle');
+
+			return false;
+		});
+
+		/* Start */
+		$("#startProcess").submit(function(event) {
+			//Stop form from submitting normally
+			event.preventDefault();
+
+			//Get values:
+			var $form = $(this),
+				processD = $form.find("select[name='process']").val(),
+				startD = $form.find("input[name='start']").val(),
+				endD = $form.find("input[name='end']").val(),
+				url = $form.attr("action");
+
+			//Send data
+			var posting = $.post(url, {
+				process: processD,
+				start: startD,
+				end: endD
+			});
+
+			//Put the results in a div
+			posting.done(function(data) {
+				processData(data);
+			}, "json");
+		});
+
+		function processData(data) {
+			//Retuned message in div
+			$("#message").empty().append(data.message);
+			$("#message").removeClass("alert-danger alert-success").addClass(data.state);
+
+			//Show div
+			$("#message").fadeIn(2000, function() {
+				$("#message").delay(2000).fadeOut(2000);
+			});
+		}
 	</script>
 </body>
 
