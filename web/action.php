@@ -119,8 +119,6 @@ elseif (isset($_POST["refresh"]) && $_POST["refresh"] == "process")
     $show = new admin();
     $data = $show->getProcess();
 
-    $print = "";
-
     //Loop through data
     foreach ($data as $key => $value)
     {
@@ -131,7 +129,7 @@ elseif (isset($_POST["refresh"]) && $_POST["refresh"] == "process")
         print ("</td>");
         print ("<td>");
         print ("<div class=\"progress\" style=\"margin-bottom: 0px;\">");
-        print ("<div data-toggle=\"tooltip\" title=\"Complete: " . $value["progress"] . " />%\" style=\"width: " . $value["progress"] . "%;\" aria-valuemax=\"100\" aria-valuemin=\"0\" aria-valuenow=\"" . $value["progress"] . "\" role=\"progressbar\" class=\"progress-bar " . $value["class"] . "\"><span class=\"sr-only\">" . $value["progress"] . "% complete</span>");
+        print ("<div data-toggle=\"tooltip\" title=\"Complete: " . $value["progress"] . "%\" style=\"width: " . $value["progress"] . "%;\" aria-valuemax=\"100\" aria-valuemin=\"0\" aria-valuenow=\"" . $value["progress"] . "\" role=\"progressbar\" class=\"progress-bar " . $value["class"] . "\"><span class=\"sr-only\">" . $value["progress"] . "% complete</span>");
         print ("</div>");
         print ("</div>");
         print ("</td>");
@@ -142,6 +140,9 @@ elseif (isset($_POST["refresh"]) && $_POST["refresh"] == "process")
         print ("<td>" . $value["working"] . "</td>");
         print ("</tr>");
     }
+	
+	//JavaScript need to be reloaded too..
+	//print("<script src=\"js/admin.js\"></script>");
 }
 else
 {
