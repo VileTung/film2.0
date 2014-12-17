@@ -29,13 +29,15 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 * _Get subtitles from OpenSubtitles.org._
 * _Webinterface._
 * _Monitor and start background jobs._
+* _Main page caching._
+* _Admin page AJaX refreshing._
 
 ### Future
 
 > - Admin interface (extend).
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
-> - Main page caching.
+> - Main page AJaX (reloading etc.).
 
 ### Self notes
 
