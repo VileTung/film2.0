@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+    <if:movieFound>
+        <loop:movies>
+            <movie>
+                <title>
+                    <tag:movies[].title />
+                </title>
+                <imdb>
+                    <tag:movies[].imdb />
+                </imdb>
+                <description>
+                    <tag:movies[].description />
+                </description>
+                <runtime>
+                    <tag:movies[].runtime />
+                </runtime>
+                <rating>
+                    <tag:movies[].rating />
+                </rating>
+                <release>
+                    <tag:movies[].date />
+                </release>
+                <added>
+                    <tag:movies[].added />
+                </added>
+                <loop:movies[].torrents>
+                    <torrent>
+                        <url>
+                            <tag:movies[].torrents[].url />
+                        </url>
+                        <quality>
+                            <tag:movies[].torrents[].quality />
+                        </quality>
+                        <state>
+                            <tag:movies[].torrents[].state />
+                        </state>
+                        <size>
+                            <tag:movies[].torrents[].size />
+                        </size>
+                    </torrent>
+                </loop:movies[].torrents>
+                <loop:movies[].subtitles>
+                    <subtitle>
+                        <url>
+                            <tag:movies[].subtitles[].url />
+                        </url>
+                        <language>
+                            <tag:movies[].subtitles[].language />
+                        </language>
+                    </subtitle>
+                </loop:movies[].subtitles>
+            </movie>
+        </loop:movies>
+	<else:movieFound>
+		<error id="<tag:error />"><tag:message /></error>
+	</if:movieFound>
+</collection>
