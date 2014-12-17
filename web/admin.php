@@ -32,7 +32,7 @@ class admin
     public function getProcess()
     {
         //Get all sessions
-        list($rowCount, $result) = sqlQueryi("SELECT * FROM `sessions`", false, true, false);
+        list($rowCount, $result) = sqlQueryi("SELECT * FROM `sessions`", false, true);
 
         foreach ($result as $key => $value)
         {

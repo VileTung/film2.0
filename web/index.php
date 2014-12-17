@@ -243,7 +243,7 @@ class index
         }
 
         //Count rows from MySQL
-        list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS `rows` FROM `imdb` " . $this->query, $parameters, true);
+        list($rowCount, $resultRows) = sqlQueryi("SELECT COUNT(*) AS `rows` FROM `imdb` " . $this->query, $parameters, true, true);
 
         //Calculate how many movies
         $movieCount = ceil($resultRows[0]["rows"] / 6);
@@ -271,7 +271,7 @@ class index
         for ($i = 0; $i <= $movieCount - 1; $i++)
         {
             //Get movies
-            list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 5 + $extra) . ",5", $parameters, true);
+            list($rowCount, $result) = sqlQueryi("SELECT * FROM `imdb` " . $this->query . " LIMIT " . ($i * 5 + $extra) . ",5", $parameters, true, true);
 
             foreach ($result as $key => $fetch)
             {
@@ -287,7 +287,7 @@ class index
                 }
 
                 //Get all genres
-                list($rowCountG, $resultG) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+                list($rowCountG, $resultG) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true, true);
 
                 $genres = "";
 
@@ -297,14 +297,14 @@ class index
                 }
 
                 //Get all torrents
-                list($rowCountT, $resultT) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+                list($rowCountT, $resultT) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true, true);
 
                 $torrents = array();
 
                 foreach ($resultT as $key => $valueT)
                 {
                     //Get all trackers
-                    list($rowCountTr, $resultTr) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s", $valueT["hash"]), true);
+                    list($rowCountTr, $resultTr) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s", $valueT["hash"]), true, true);
 
                     $avg = "";
                     $count = 0;
@@ -349,7 +349,7 @@ class index
                 }
 
                 //Get all subtitles
-                list($rowCountS, $resultS) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true);
+                list($rowCountS, $resultS) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $fetch["imdb"]), true, true);
 
                 //Subtitle
                 $subtitles = array();

@@ -24,7 +24,7 @@ function Database($connect = true)
     $GLOBALS["MySQLi"] = $MySQLi;
 }
 
-function sqlQueryi($query, $parameters = false, $result = false, $useCache = true)
+function sqlQueryi($query, $parameters = false, $result = false, $useCache = false)
 {
     global $MySQLi, $cache, $cacheExpire;
 

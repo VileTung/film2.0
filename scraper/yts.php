@@ -25,7 +25,7 @@ class yts
             for ($i = $startPage; $i <= $endPage; $i++)
             {
                 //JSON encoded data
-                list($state, $json) = cURL("https://yts.re/api/list.json?limit=50&set=" . $i);
+                list($state, $json) = cURL("https://yts.wf/api/list.json?limit=50&set=" . $i);
 				//Possible other URLs
 				//https://yts.re
 				//http://ytsre.eu
