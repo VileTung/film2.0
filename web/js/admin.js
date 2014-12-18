@@ -119,7 +119,9 @@ $(document).on("submit", "#startProcess", function(event) {
 
 /* Reload data */
 function refresh() {
-	$("#list").empty().append("<span>Loading...</span>");
+	$("#list").fadeOut("fast", function() {
+		$(this).empty().append("<tr><td colspan=\"7\">Loading...</td></tr>").fadeIn("fast");
+	});
 
 	//Send data
 	var posting = $.post("action.php", {
@@ -128,11 +130,13 @@ function refresh() {
 
 	//Put the results in the table
 	posting.done(function(data) {
-		$("#list").empty().html(data);
+		$("#list").fadeOut("fast", function() {
+			$(this).empty().html(data).fadeIn("fast");
 
-		//We have to bind it again!
-		$(function() {
-			$("[data-toggle=\"tooltip\"]").tooltip();
+			//We have to bind it again!
+			$(function() {
+				$("[data-toggle=\"tooltip\"]").tooltip();
+			});
 		});
 	});
 }
@@ -149,8 +153,6 @@ function processData(data) {
 				$("#page").fadeIn("slow");
 				refresh();
 			});
-
 		});
-
 	});
 }

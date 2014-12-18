@@ -39,7 +39,6 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
 > - Main page AJaX (reloading etc.).
-> - Admin page, nicer AJaX reloading.
 
 ### Self notes
 
