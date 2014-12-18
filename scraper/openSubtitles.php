@@ -11,6 +11,9 @@ class openSubtitles
     //Mark if we failed or not
     private $failed = false;
 
+    //Read settings
+    private $settings;
+
     public function retrieve($id, $filename, $language = "nl")
     {
         global $logging;
@@ -18,19 +21,50 @@ class openSubtitles
         //Message
         $logging->info("OpenSubtitles.org (" . $id . " - " . $language . ")");
 
-        //Default value
-        $this->failed = false;
+        //Settings
+        $this->settings = new settings();
 
-        //Default, Dutch
-        self::subtitle($id, $filename, $language);
+        //Calc datetime
+        $dateTime = (int)$this->settings->get("OpenSubtitles", "dateTime") + (60 * 60 * 24);
+        $now = time();
 
-        if ($this->failed)
+        //Reset dateTime
+        if ($now > $dateTime)
         {
             //Message
-            $logging->warning("Dutch failed, let's try English");
+            $logging->info("Reset dateTime");
 
-            //Second try, English
-            self::subtitle($id, $filename, "en");
+            $this->settings->set("OpenSubtitles", "count", "0");
+            $this->settings->set("OpenSubtitles", "dateTime", time());
+            $this->settings->set("OpenSubtitles", "enabled", "true");
+        }
+
+        //Allowed?
+        if ($this->settings->get("OpenSubtitles", "enabled"))
+        {
+            //Default value
+            $this->failed = false;
+
+            //Default, Dutch
+            self::subtitle($id, $filename, $language);
+
+            if ($this->failed)
+            {
+                //Message
+                $logging->warning("Dutch failed, let's try English");
+
+                //Second try, English
+                self::subtitle($id, $filename, "en");
+            }
+        }
+        //Disabled
+        else
+        {
+            //Locked till
+            $locked = date("d-m-Y H:i:s", $dateTime);
+
+            //Message
+            $logging->debug("OpenSubtitles is disabled (" . $locked . ")");
         }
     }
 
@@ -104,6 +138,26 @@ class openSubtitles
             {
                 $this->failed = true;
                 throw new Exception("No subtitle(s) found!");
+            }
+
+            //Get count
+            $osCount = $this->settings->get("OpenSubtitles", "count");
+
+            if ($osCount >= 200)
+            {
+                $this->settings->set("OpenSubtitles", "enabled", "false");
+
+                throw new Exception("Limit reached (" . $this->settings->get("OpenSubtitles", "count") . ")!");
+            }
+            //Update count
+            else
+            {
+                $osCount++;
+
+                $this->settings->set("OpenSubtitles", "count", $osCount);
+
+                //Message
+                $logging->debug("Subtitle count: " . $osCount);
             }
 
             //Subtitle URL

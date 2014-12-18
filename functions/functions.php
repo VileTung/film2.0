@@ -32,13 +32,17 @@ use GuzzleHttp\Stream\Stream;
 //Variables for easy folder access
 $root = dirname(dirname(__file__)) . "/";
 
+//Main folders
 $cache = $root . "cache/";
 $functions = $root . "functions/";
-$cacheExpire = $functions . "cache";
 $log = $root . "log/";
 $poster = $root . "poster/";
 $scraper = $root . "scraper/";
 $subtitle = $root . "subtitle/";
+
+//Additional files
+$cacheExpire = $functions . "cache";
+$iniSettings = $functions . "settings.ini";
 
 //Load additional functions
 require_once ($functions . "cache.php");
@@ -49,6 +53,7 @@ require_once ($functions . "lock.php");
 require_once ($functions . "log.php");
 require_once ($functions . "regex.php");
 require_once ($functions . "scrape.php");
+require_once ($functions . "settings.php");
 require_once ($functions . "sqlQuery.php");
 require_once ($functions . "subtitle.php");
 require_once ($functions . "torrent.php");
