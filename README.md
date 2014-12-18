@@ -35,11 +35,17 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ### Future
 
-> - Admin interface (extend).
+> - Test page in admin interface.
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
 > - Main page AJaX (reloading etc.).
 
 ### Self notes
 
-> - None ATM.
+Test page:
+> - Torrent file (extract data).
+> - Valid hash.
+> - Scrape Tracker.
+> - Get IMDB info.
+> - YIFY Subtitle.
+> - OpenSubtitles Subtitle.

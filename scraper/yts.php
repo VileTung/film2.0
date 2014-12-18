@@ -8,6 +8,7 @@
 
 class yts
 {
+    //Movie counter
     private $iMovie = 1;
 
     //Get movies
@@ -18,6 +19,14 @@ class yts
         //Message
         $logging->info("Starting YTS (" . $startPage . " until " . $endPage . ")");
 
+        if ($startPage == 0 || $startPage == "0")
+        {
+            $startPage = 1;
+
+            //Message
+            $logging->info("Changed starting page (" . $startPage . " until " . $endPage . ")");
+        }
+
         //Try..
         try
         {
@@ -26,9 +35,9 @@ class yts
             {
                 //JSON encoded data
                 list($state, $json) = cURL("https://yts.wf/api/list.json?limit=50&set=" . $i);
-				//Possible other URLs
-				//https://yts.re
-				//http://ytsre.eu
+                //Possible other URLs
+                //https://yts.re
+                //http://ytsre.eu
 
                 if ($state)
                 {
@@ -73,11 +82,11 @@ class yts
                     //Message
                     $logging->info("YTS page: " . $i . " (" . $startPage . " until " . $endPage . ")");
                 }
-				else
-				{
-					//Message
+                else
+                {
+                    //Message
                     $logging->error("No data retrieved from YTS!");
-				}
+                }
             }
         }
         //Error reporting
