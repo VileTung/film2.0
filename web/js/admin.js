@@ -8,7 +8,7 @@ $(function() {
 });
 
 /* Mark cache as old */
-$(document).on("click","#clearCache", function() {
+$(document).on("click", "#clearCache", function() {
 	var url = $(this).attr("data-href");
 
 	//Send data
@@ -25,14 +25,14 @@ $(document).on("click","#clearCache", function() {
 });
 
 /* Refresh page */
-$(document).on("click","#refresh", function() {
+$(document).on("click", "#refresh", function() {
 	refresh();
 
 	return false;
 });
 
 /* Clean */
-$(document).on("click",".clean", function() {
+$(document).on("click", ".clean", function() {
 	var sessionId = $(this).attr("data-session");
 	var url = $(this).attr("data-href");
 
@@ -50,7 +50,7 @@ $(document).on("click",".clean", function() {
 });
 
 /* Stop */
-$(document).on("click",".warning", function() {
+$(document).on("click", ".warning", function() {
 	var sessionId = $(this).attr("data-session");
 	var url = $(this).attr("data-href");
 
@@ -70,7 +70,7 @@ $(document).on("click",".warning", function() {
 });
 
 /* Kill */
-$(document).on("click",".danger", function() {
+$(document).on("click", ".danger", function() {
 	var pid = $(this).attr("data-pid");
 	var url = $(this).attr("data-href");
 
@@ -90,7 +90,7 @@ $(document).on("click",".danger", function() {
 });
 
 /* Start */
-$(document).on("submit","#startProcess", function(event) {
+$(document).on("submit", "#startProcess", function(event) {
 	//Stop form from submitting normally
 	event.preventDefault();
 
@@ -100,7 +100,7 @@ $(document).on("submit","#startProcess", function(event) {
 		startD = $form.find("input[name='start']").val(),
 		endD = $form.find("input[name='end']").val(),
 		url = $form.attr("action");
-	
+
 	//Send data
 	var posting = $.post(url, {
 		process: processD,
@@ -129,6 +129,11 @@ function refresh() {
 	//Put the results in the table
 	posting.done(function(data) {
 		$("#list").empty().html(data);
+
+		//We have to bind it again!
+		$(function() {
+			$("[data-toggle=\"tooltip\"]").tooltip();
+		});
 	});
 }
 
