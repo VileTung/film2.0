@@ -1,0 +1,14 @@
+#Cache folder
+cache/*_*
+
+#Log
+*.txt
+
+#Poster
+*.jpg
+
+#Subtitle
+*.srt
+
+#Test file(s)
+test.php

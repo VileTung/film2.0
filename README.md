@@ -35,6 +35,7 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ### Future
 
+> - Manual add a torrent (and movie).
 > - View log, see self notes.
 > - Cache after process is done.
 > - Test page in admin interface.

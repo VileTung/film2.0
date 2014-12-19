@@ -282,6 +282,9 @@ function scrape($url, $info_hash, $method = "scrape")
         //Decoding failed
         if (!is_array($bDecoded))
         {
+			//Remove line breaks
+			$content = str_replace(array("\r\n", "\r", "\n"), "", $content);
+			
             return array(
                 "tracker" => $urlHost,
                 "state" => "failed:unable_to_bdec:" . $content,

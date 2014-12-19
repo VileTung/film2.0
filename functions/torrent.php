@@ -58,6 +58,9 @@ class torrent
 
         //Calculate hash
         $this->hash = sha1($lightBenc->bencode($decoded["info"]));
+		
+		//Message
+        $logging->debug("Torrent hash (" . $this->hash . ")");
 
         //Calculate filesize
         $movieInfo = max($decoded["info"]["files"]);
