@@ -11,6 +11,8 @@ class yts
     //Movie counter
     private $iMovie = 1;
 
+    private $retry = 0;
+
     //Get movies
     public function movies($startPage = 1, $endPage = 200)
     {
@@ -19,12 +21,23 @@ class yts
         //Message
         $logging->info("Starting YTS (" . $startPage . " until " . $endPage . ")");
 
-        if ($startPage == 0 || $startPage == "0")
+        //Page 0 is equal to page 1..
+        if ($startPage == 0 || $startPage == "0" || $endPage == 0 || $endPage == "0")
         {
-            $startPage = 1;
+            //Starting page
+            if ($startPage == 0 || $startPage == "0")
+            {
+                $startPage = 1;
+            }
+
+            //Ending page
+            if ($endPage == 0 || $endPage == "0")
+            {
+                $endPage = 1;
+            }
 
             //Message
-            $logging->info("Changed starting page (" . $startPage . " until " . $endPage . ")");
+            $logging->info("Changed starting/ending page (" . $startPage . " until " . $endPage . ")");
         }
 
         //Try..
@@ -41,6 +54,9 @@ class yts
 
                 if ($state)
                 {
+                    //Reset retry counter
+                    $this->retry = 0;
+
                     //Decode data
                     $data = json_decode($json, true);
 
@@ -84,8 +100,24 @@ class yts
                 }
                 else
                 {
-                    //Message
-                    $logging->error("No data retrieved from YTS!");
+                    //Are we allowed to retry?
+                    if ($this->retry < 5)
+                    {
+                        //Message
+                        $logging->warning("No data retrieved from YTS (attempt: " . $this->retry . " - page: " . $i . ")");
+
+                        //Lower by 1
+                        $i--;
+
+                        //Update retry count..
+                        $this->retry++;
+                    }
+                    //Stop!
+                    else
+                    {
+                        //Message
+                        $logging->error("No data retrieved from YTS (attempt: " . $this->retry . " - page: " . $i . ")");
+                    }
                 }
             }
         }
@@ -172,6 +204,7 @@ class yts
                     $getSubtitle->saveSubtitle($url, "nl");
                 }
             }
+			
             //English
             elseif (count($en) > 0)
             {
@@ -192,7 +225,6 @@ class yts
                 //Message
                 $logging->warning("No subtitles found! (" . $id . ")");
             }
-
         }
         //Error reporting
         catch (exception $e)

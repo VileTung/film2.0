@@ -35,6 +35,8 @@ _Some files, including the following, needs to be executable, make sure to `chmo
 
 ### Future
 
+> - View log, see self notes.
+> - Cache after process is done.
 > - Test page in admin interface.
 > - Get Torrents from Torrentz.eu.
 > - A wanted list.
@@ -49,3 +51,8 @@ Test page:
 > - Get IMDB info.
 > - YIFY Subtitle.
 > - OpenSubtitles Subtitle.
+
+View log:
+> - Default show last 50 lines.
+> - Use AJaX to refresh.
+> - Use AJaX to scroll.
