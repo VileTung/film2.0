@@ -55,7 +55,9 @@ class regex
         $return["maxEnd"] = "~<a(?:.*)(?:\d+)\">(\d+)</a>~Ui";
         $return["movie"] = "~<dl><dt><a href=\"\/([a-f0-9]*)\"(?:\s*)>(.*)<\/a>~Uis";	
         $return["cleanTitle"] = "~(.*\b((19|20)\d{2})\b)~i";	
-        $return["illegal"] = "~\b(dvdscrrip|dvdscr|dvd|hdcam|cam|hdts|ts|avchd|xvid|divx)\b~i";	
+        $return["illegal"] = "~\b(dvdscrrip|dvdscr|dvd|hdcam|cam|hdts|ts|avchd|xvid|divx)\b~i";
+        $return["trackerlist"] = "~info_hash:(.*)</div>~i";
+        $return["tracker"] = "~<dt>(?:.*)>(.*)</a></dt>~Ui";
 
         return self::match($return[$regex], $string, $i, $ii);
     }
