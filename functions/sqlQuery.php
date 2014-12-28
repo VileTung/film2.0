@@ -13,7 +13,7 @@ function Database($connect = true)
 
     unset($GLOBALS["MySQLi"]);
 
-    $MySQLi = mysqli_connect("localhost", "root", "8206479Ef", "film2.0");
+    $MySQLi = mysqli_connect("localhost", "root", "8206479Ef", "film2.0-dev");
 
     if (!$MySQLi)
     {
