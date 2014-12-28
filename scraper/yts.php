@@ -111,6 +111,9 @@ class yts
 
                         //Update retry count..
                         $this->retry++;
+						
+						//Pause
+						sleep(5);
                     }
                     //Stop!
                     else
