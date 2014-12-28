@@ -140,15 +140,15 @@ class yts
         $locker->update($progress);
     }
 
-    //Get subtitle
-    private function subtitle($id)
+    //Get subtitle, the old fashion way..
+    public function subtitleHTML($id)
     {
         global $logging;
 
         try
         {
             //Message
-            $logging->info("YIFY Subtitle (" . $id . ")");
+            $logging->info("YIFY Subtitle (HTML - " . $id . ")");
 
             //Get page
             list($state, $content) = cURL("http://yifysubtitles.com/movie-imdb/tt" . $id);
@@ -225,6 +225,77 @@ class yts
                 //Message
                 $logging->warning("No subtitles found! (" . $id . ")");
             }
+        }
+        //Error reporting
+        catch (exception $e)
+        {
+            $logging->error($e->getMessage());
+        }
+    }
+	
+	//Get subtitle, the new way!
+    public function subtitle($id)
+    {
+        global $logging;
+
+        try
+        {
+            //Message
+            $logging->info("YIFY Subtitle (API - " . $id . ")");
+
+            //Get page
+            list($state, $json) = cURL("http://api.yifysubtitles.com/subs/tt" . $id);
+			//Mirror/alternative 'http://api.ysubs.com/subs/'
+
+            //Failed
+            if (!$state)
+            {
+                throw new Exception("Invalid YIFY subtitle-url (" . $id . ")");
+            }
+			
+			//Decode data
+			$data = json_decode($json, true);
+			
+			//Check if there are any subtitles
+			if(isset($data["subtitles"]) && $data["subtitles"]>0)
+			{
+				$subs = $data["subs"]["tt".$id];
+			
+				//Get all Dutch subtitles
+				if(isset($subs["dutch"]))
+				{
+					foreach($subs["dutch"] as $key=>$subtitle)
+					{
+						//Construct URL
+						$url = "http://yifysubtitles.com" . $subtitle["url"];
+
+						//Retrieve subtitle
+						$getSubtitle = new subtitle($id);
+	
+						$getSubtitle->saveSubtitle($url, "nl");
+					}
+				}
+				//Otherwise, English..
+				elseif(isset($subs["english"]))
+				{
+					foreach($subs["english"] as $key=>$subtitle)
+					{
+						//Construct URL
+						$url = "http://yifysubtitles.com" . $subtitle["url"];
+
+						//Retrieve subtitle
+						$getSubtitle = new subtitle($id);
+	
+						$getSubtitle->saveSubtitle($url, "en");
+					}
+				}
+				//Failed
+				else
+				{
+					//Message
+					$logging->warning("No subtitles found! (" . $id . ")");
+				}
+			}
         }
         //Error reporting
         catch (exception $e)
