@@ -48,7 +48,17 @@ class regex
 
         return self::match($return[$regex], $string, $i, $ii);
     }
+	
+	//Torrentz
+	public function torrentz($regex, $string, $i = null, $ii = 0)
+    {
+        $return["maxEnd"] = "~<a(?:.*)(?:\d+)\">(\d+)</a>~Ui";
+        $return["movie"] = "~<dl><dt><a href=\"\/([a-f0-9]*)\"(?:\s*)>(.*)<\/a>~Uis";	
+        $return["cleanTitle"] = "~(.*\b((19|20)\d{2})\b)~i";	
+        $return["illegal"] = "~\b(dvdscrrip|dvdscr|dvd|hdcam|cam|hdts|ts|avchd|xvid|divx)\b~i";	
 
+        return self::match($return[$regex], $string, $i, $ii);
+    }
 }
 
 ?>

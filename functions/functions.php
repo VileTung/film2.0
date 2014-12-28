@@ -61,6 +61,7 @@ require_once ($functions . "torrent.php");
 //Scrapers
 require_once ($scraper . "openSubtitles.php");
 require_once ($scraper . "scraper.php");
+require_once ($scraper . "torrentz.php");
 require_once ($scraper . "yts.php");
 
 //Guzzle client
