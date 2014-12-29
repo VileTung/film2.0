@@ -105,9 +105,13 @@ class imdb
 	}
 
 	//Retrieve ID from IMDB
-	public function getID($title)
+	public function getID($title, $year = false)
 	{
+		global $logging;
 
+		//First search with year in title
+
+		//If failed, try without year
 	}
 
 	//Insert in DB
