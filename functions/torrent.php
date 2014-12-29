@@ -5,256 +5,247 @@
  * @copyright 2014
  * @info Torrent
  */
-
 class torrent
 {
-    //Save hash
-    private $hash;
+	//Save hash
+	private $hash;
 
-    //Save trackers
-    private $trackers = array();
+	//Save trackers
+	private $trackers = array();
 
-    //Save largest filesize
-    private $movieSize;
+	//Save largest filesize
+	private $movieSize;
 
-    //Save the filename
-    private $movieName;
+	//Save the filename
+	private $movieName;
 
-    //Scraped results
-    private $scrapedData = array();
+	//Scraped results
+	private $scrapedData = array();
 
-    //Set $hash, only needed for deleting
-    public function __construct($hash = false)
-    {
-        //Test if valid..
-        if (preg_match("~^[0-9a-f]{40}$~i", $hash))
-        {
-            $this->hash = $hash;
-        }
-    }
+	//Set $hash, only needed for deleting
+	public function __construct($hash = false)
+	{
+		//Test if valid..
+		if (preg_match("~^[0-9a-f]{40}$~i", $hash))
+		{
+			$this->hash = $hash;
+		}
+	}
 
-    //We've got a torrent file
-    public function file($url)
-    {
-        global $logging;
+	//We've got a torrent file
+	public function file($url)
+	{
+		global $logging;
 
-        //Message
-        $logging->info("File-method");
-
-        //Retrieve file
-        list($state, $content) = cURL($url);
-
-        //Failed
-        if (!$state)
-        {
-            throw new Exception("Invalid torrent-url (" . $url . ")");
-        }
-
-        //Start lightBenc
-        $lightBenc = new lightbenc;
-
-        //Decode torrent
-        $decoded = $lightBenc->bdecode($content);
-
-        //Calculate hash
-        $this->hash = sha1($lightBenc->bencode($decoded["info"]));
-		
 		//Message
-        $logging->debug("Torrent hash (" . $this->hash . ")");
+		$logging->info("File-method");
 
-        //Calculate filesize
-        $movieInfo = max($decoded["info"]["files"]);
-        $this->movieSize = $movieInfo["length"];
+		//Retrieve file
+		list($state, $content) = cURL($url);
 
-        //Filename
-        $this->movieName = $movieInfo["path"][0];
+		//Failed
+		if (!$state)
+		{
+			throw new Exception("Invalid torrent-url (" . $url . ")");
+		}
 
-        //There is only one tracker in this variable
-        $trackerList = array($decoded["announce"]);
+		//Start lightBenc
+		$lightBenc = new lightbenc;
 
-        //Now we add the other ones
-        foreach ($decoded["announce-list"] as $trackers)
-        {
-            $trackerList[] = $trackers[0];
-        }
+		//Decode torrent
+		$decoded = $lightBenc->bdecode($content);
 
-        //Remove duplicates
-        $this->trackers = array_unique($trackerList);
+		//Calculate hash
+		$this->hash = sha1($lightBenc->bencode($decoded["info"]));
 
-        //Return filename, for OpenSubtitles.org
-        return $this->movieName;
-    }
+		//Message
+		$logging->debug("Torrent hash (" . $this->hash . ")");
 
-    //We've got some trackers and hash
-    public function tracker($hash, $trackers)
-    {
-        global $logging;
+		//Calculate filesize
+		$movieInfo = max($decoded["info"]["files"]);
+		$this->movieSize = $movieInfo["length"];
 
-        //Message
-        $logging->info("Tracker-method");
+		//Filename
+		$this->movieName = $movieInfo["path"][0];
 
-        //Provided hash is not valid
-        if (!preg_match("~^[0-9a-f]{40}$~i", $hash))
-        {
-            throw new Exception("Invalid hash!");
-        }
+		//There is only one tracker in this variable
+		$trackerList = array($decoded["announce"]);
 
-        //Provided tracker(s) is/are not valid
-        if (!is_array($trackers) || !count($trackers) > 0)
-        {
-            throw new Exception("Invalid tracker(s)!");
-        }
+		//Now we add the other ones
+		foreach ($decoded["announce-list"] as $trackers)
+		{
+			$trackerList[] = $trackers[0];
+		}
 
-        //Set hash and tracker(s)
-        $this->hash = $hash;
-        $this->trackers = $trackers;
-    }
+		//Remove duplicates
+		$this->trackers = array_unique($trackerList);
 
-    //Now we are going to scrape
-    public function scrape()
-    {
-        global $logging;
+		//Return filename, for OpenSubtitles.org
+		return $this->movieName;
+	}
 
-        //Default seeders
-        $countSeeders = 0;
+	//We've got some trackers and hash
+	public function tracker($hash, $trackers)
+	{
+		global $logging;
 
-        foreach ($this->trackers as $tracker)
-        {
-            //Scrape'n
-            $scrape = scrape($tracker, $this->hash);
+		//Message
+		$logging->info("Tracker-method");
 
-            //Everything went OK
-            if ($scrape["state"] == "ok")
-            {
-                //Message
-                $logging->info("Scrape " . $scrape["state"] . ": " . $scrape["method"] . " (S: " . $scrape["seeders"] . " L:" . $scrape["leechers"] . ") | " . $tracker);
+		//Provided hash is not valid
+		if (!preg_match("~^[0-9a-f]{40}$~i", $hash))
+		{
+			throw new Exception("Invalid hash!");
+		}
 
-                //Seeders & leechers
-                $this->scrapedData[] = array(
-                    "tracker" => $tracker,
-                    "seeders" => $scrape["seeders"],
-                    "leechers" => $scrape["leechers"],
-                    "update" => date("Y-m-d H:i:s"));
+		//Provided tracker(s) is/are not valid
+		if (!is_array($trackers) || !count($trackers) > 0)
+		{
+			throw new Exception("Invalid tracker(s)!");
+		}
 
-                //We need this
-                $countSeeders += $scrape["seeders"];
-            }
-            //Scrape failed
-            else
-            {
-                //Message
-                $logging->warning("Scrape failed: " . $scrape["method"] . " | " . $scrape["state"] . " | " . $tracker);
+		//Set hash and tracker(s)
+		$this->hash = $hash;
+		$this->trackers = $trackers;
+	}
 
-                //Empty seeders & leechers
-                $this->scrapedData[] = array(
-                    "tracker" => $tracker,
-                    "seeders" => 0,
-                    "leechers" => 0,
-                    "update" => date("Y-m-d H:i:s", 0));
-            }
-        }
+	//Now we are going to scrape
+	public function scrape()
+	{
+		global $logging;
 
-        //Torrent is dead
-        if (!$countSeeders > 0)
-        {
-            throw new Exception("Torrent is dead!");
-        }
-    }
+		//Default seeders
+		$countSeeders = 0;
 
-    //Insert data
-    public function database($state = true, $imdb, $quality, $retriever, $reliability)
-    {
-        global $logging;
+		foreach ($this->trackers as $tracker)
+		{
+			//Scrape'n
+			$scrape = scrape($tracker, $this->hash);
 
-        //Open database connection
-        Database();
+			//Everything went OK
+			if ($scrape["state"] == "ok")
+			{
+				//Message
+				$logging->info("Scrape " . $scrape["state"] . ": " . $scrape["method"] . " (S: " . $scrape["seeders"] . " L:" . $scrape["leechers"] . ") | " . $tracker);
 
-        //Delete torrent
-        if (!$state)
-        {
-            //Message
-            $logging->error("Torrent removed: " . $this->hash);
+				//Seeders & leechers
+				$this->scrapedData[] = array("tracker" => $tracker,
+					"seeders" => $scrape["seeders"],
+					"leechers" => $scrape["leechers"],
+					"update" => date("Y-m-d H:i:s"));
 
-            sqlQueryi("DELETE FROM `data` WHERE `hash` = ?", array("s", $this->hash));
-            sqlQueryi("DELETE FROM `trackers` WHERE `hash` = ?", array("s", $this->hash));
-        }
-        //Continue, insert or update
-        else
-        {
-            //Check if row exists
-            list($rowCount, $result) = sqlQueryi("SELECT `id` FROM `data` WHERE `hash` = ?", array("s", $this->hash), true);
+				//We need this
+				$countSeeders += $scrape["seeders"];
+			} //Scrape failed
+			else
+			{
+				//Message
+				$logging->warning("Scrape failed: " . $scrape["method"] . " | " . $scrape["state"] . " | " . $tracker);
 
-            //Torrent doesn't exist
-            if (!$rowCount > 0)
-            {
-                //Insert data
-                sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`,`reliability`) VALUES (?,?,?,?,?,?,?,?)", array(
-                    "ssssssss",
-                    $this->movieName,
-                    $imdb,
-                    $this->hash,
-                    $this->movieSize,
-                    $quality,
-                    $retriever,
-                    date("Y-m-d H:i:s"),
-                    $reliability));
+				//Empty seeders & leechers
+				$this->scrapedData[] = array("tracker" => $tracker,
+					"seeders" => 0,
+					"leechers" => 0,
+					"update" => date("Y-m-d H:i:s", 0));
+			}
+		}
 
-                //Insert trackers
-                foreach ($this->scrapedData as $tracker)
-                {
-                    sqlQueryi("INSERT INTO `trackers` (`hash`,`tracker`,`leechers`,`seeders`,`update`) VALUES (?,?,?,?,?)", array(
-                        "sssss",
-                        $this->hash,
-                        $tracker["tracker"],
-                        $tracker["leechers"],
-                        $tracker["seeders"],
-                        $tracker["update"]));
-                }
+		//Torrent is dead
+		if (!$countSeeders > 0)
+		{
+			throw new Exception("Torrent is dead!");
+		}
+	}
 
-                //Message
-                $logging->info("Torrent added: " . $this->hash);
-            }
-            //Torrent does exist
-            else
-            {
-                //Update trackers
-                foreach ($this->scrapedData as $tracker)
-                {
-                    //Check if tracker exists
-                    list($rowCount, $result) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ? AND `tracker` = ?", array(
-                        "ss",
-                        $this->hash,
-                        $tracker["tracker"]), true);
+	//Insert data
+	public function database($state = true, $imdb, $quality, $retriever, $reliability)
+	{
+		global $logging;
 
-                    //Update
-                    if ($rowCount > 0)
-                    {
-                        sqlQueryi("UPDATE `trackers` SET `leechers` = ?, `seeders` = ?, `update` = ? WHERE `hash` = ? AND `tracker` = ?", array(
-                            "sssss",
-                            $tracker["leechers"],
-                            $tracker["seeders"],
-                            $tracker["update"],
-                            $this->hash,
-                            $tracker["tracker"]));
-                    }
-                    //New/add
-                    else
-                    {
-                        sqlQueryi("INSERT INTO `trackers` (`hash`,`tracker`,`leechers`,`seeders`,`update`) VALUES (?,?,?,?,?)", array(
-                            "sssss",
-                            $this->hash,
-                            $tracker["tracker"],
-                            $tracker["leechers"],
-                            $tracker["seeders"],
-                            $tracker["update"]));
-                    }
-                }
+		//Open database connection
+		Database();
 
-                //Message
-                $logging->info("Torrent updated: " . $this->hash);
-            }
-        }
-    }
+		//Delete torrent
+		if (!$state)
+		{
+			//Message
+			$logging->error("Torrent removed: " . $this->hash);
+
+			sqlQueryi("DELETE FROM `data` WHERE `hash` = ?", array("s",
+				$this->hash));
+			sqlQueryi("DELETE FROM `trackers` WHERE `hash` = ?", array("s",
+				$this->hash));
+		} //Continue, insert or update
+		else
+		{
+			//Check if row exists
+			list($rowCount, $result) = sqlQueryi("SELECT `id` FROM `data` WHERE `hash` = ?", array("s",
+				$this->hash), true);
+
+			//Torrent doesn't exist
+			if (!$rowCount > 0)
+			{
+				//Insert data
+				sqlQueryi("INSERT INTO `data` (`name`,`imdb`,`hash`,`size`,`quality`,`retriever`,`added`,`reliability`) VALUES (?,?,?,?,?,?,?,?)", array("ssssssss",
+					$this->movieName,
+					$imdb,
+					$this->hash,
+					$this->movieSize,
+					$quality,
+					$retriever,
+					date("Y-m-d H:i:s"),
+					$reliability));
+
+				//Insert trackers
+				foreach ($this->scrapedData as $tracker)
+				{
+					sqlQueryi("INSERT INTO `trackers` (`hash`,`tracker`,`leechers`,`seeders`,`update`) VALUES (?,?,?,?,?)", array("sssss",
+						$this->hash,
+						$tracker["tracker"],
+						$tracker["leechers"],
+						$tracker["seeders"],
+						$tracker["update"]));
+				}
+
+				//Message
+				$logging->info("Torrent added: " . $this->hash);
+			} //Torrent does exist
+			else
+			{
+				//Update trackers
+				foreach ($this->scrapedData as $tracker)
+				{
+					//Check if tracker exists
+					list($rowCount, $result) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ? AND `tracker` = ?", array("ss",
+						$this->hash,
+						$tracker["tracker"]), true);
+
+					//Update
+					if ($rowCount > 0)
+					{
+						sqlQueryi("UPDATE `trackers` SET `leechers` = ?, `seeders` = ?, `update` = ? WHERE `hash` = ? AND `tracker` = ?", array("sssss",
+							$tracker["leechers"],
+							$tracker["seeders"],
+							$tracker["update"],
+							$this->hash,
+							$tracker["tracker"]));
+					} //New/add
+					else
+					{
+						sqlQueryi("INSERT INTO `trackers` (`hash`,`tracker`,`leechers`,`seeders`,`update`) VALUES (?,?,?,?,?)", array("sssss",
+							$this->hash,
+							$tracker["tracker"],
+							$tracker["leechers"],
+							$tracker["seeders"],
+							$tracker["update"]));
+					}
+				}
+
+				//Message
+				$logging->info("Torrent updated: " . $this->hash);
+			}
+		}
+	}
 }
 
 ?>

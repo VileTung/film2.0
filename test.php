@@ -1,20 +1,35 @@
 #!/usr/bin/php
 <?php
 	
-require_once("functions/functions.php");
+/*$a1 = array("1","2");
+$a2 = array("9","0");
+
+$test = array_merge($a1,$a2);
+
+var_dump($a1);
+var_dump($a2);
+var_dump($test);*/
 	
-try{
-$logging = new loggen($log."testSub.txt");
+	
+	
+require_once("functions/functions.php");
 
-$test = new openSubtitles();
-$test->retrieve("2268458","The.Maze.Runner.2014.1080p.BluRay.x264.YIFY.mp4");
-} catch(Exception $e) {
-    $logging->error($e->getMessage());
-}
+$logging = new loggen($log."test.txt");
+
+//YIFY SUBTITLE
+//$t = new yts();
+//$t -> subtitle("1646971");
+
+//TORRENTZ.EU
+
+$test = new torrentz(0,0,2014);
+$test->movies();
 
 
 
 
+
+/*
 //$test->yify("123");
 
 
@@ -29,7 +44,7 @@ $test->retrieve("2268458","The.Maze.Runner.2014.1080p.BluRay.x264.YIFY.mp4");
 	
 //require_once("functies/log.php");
 
-/*$log = new loggen("/var/www/film2.0/test.txt");
+$log = new loggen("/var/www/film2.0/test.txt");
 
 function kevin()
 {

@@ -18,11 +18,11 @@ $guzzle = "/home/Guzzle/vendor/autoload.php";
 //We need Guzzle/cURL
 if (!function_exists("curl_init") && !file_exists($guzzle))
 {
-    die("cURL en/of Guzzle zijn niet geïnstalleerd(!!)");
+	die("cURL en/of Guzzle zijn niet geï¿½nstalleerd(!!)");
 }
 
 //Load Guzzle
-require_once ($guzzle);
+require_once($guzzle);
 
 //Guzzle functies
 use GuzzleHttp\Client;
@@ -45,24 +45,24 @@ $cacheExpire = $functions . "cache";
 $iniSettings = $functions . "settings.ini";
 
 //Load additional functions
-require_once ($functions . "cache.php");
-require_once ($functions . "error.php");
-require_once ($functions . "imdb.php");
-require_once ($functions . "lightbenc.php");
-require_once ($functions . "lock.php");
-require_once ($functions . "log.php");
-require_once ($functions . "regex.php");
-require_once ($functions . "scrape.php");
-require_once ($functions . "settings.php");
-require_once ($functions . "sqlQuery.php");
-require_once ($functions . "subtitle.php");
-require_once ($functions . "torrent.php");
+require_once($functions . "cache.php");
+require_once($functions . "error.php");
+require_once($functions . "imdb.php");
+require_once($functions . "lightbenc.php");
+require_once($functions . "lock.php");
+require_once($functions . "log.php");
+require_once($functions . "regex.php");
+require_once($functions . "scrape.php");
+require_once($functions . "settings.php");
+require_once($functions . "sqlQuery.php");
+require_once($functions . "subtitle.php");
+require_once($functions . "torrent.php");
 
 //Scrapers
-require_once ($scraper . "openSubtitles.php");
-require_once ($scraper . "scraper.php");
-require_once ($scraper . "torrentz.php");
-require_once ($scraper . "yts.php");
+require_once($scraper . "openSubtitles.php");
+require_once($scraper . "scraper.php");
+require_once($scraper . "torrentz.php");
+require_once($scraper . "yts.php");
 
 //Guzzle client
 $client = new Client();
@@ -70,22 +70,25 @@ $client = new Client();
 //cURL
 function cURL($url)
 {
-    global $client;
+	global $client;
 
-    try
-    {
-        //Try
-        $request = $client->createRequest("GET", $url, ["timeout" => 60, "cookies" => true]);
-        $response = $client->send($request);
+	try
+	{
+		//Try
+		$request = $client->createRequest("GET", $url, ["timeout" => 60,
+			"cookies" => true]);
+		$response = $client->send($request);
 
-        //Return data
-        return array(true, $response->getBody()->getContents());
-    }
-    catch (RequestException $e)
-    {
-        //Failed, send information
-        return array(false, $e->getMessage());
-    }
+		//Return data
+		return array(true,
+			$response->getBody()->getContents());
+	}
+	catch (RequestException $e)
+	{
+		//Failed, send information
+		return array(false,
+			$e->getMessage());
+	}
 }
 
 ?>

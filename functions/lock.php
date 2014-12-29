@@ -1,11 +1,10 @@
 <?php
 
 /**
-* @author Kevin
-* @copyright 2014
-* @info Locks a session, also makes it stoppable
-*/
-
+ * @author Kevin
+ * @copyright 2014
+ * @info Locks a session, also makes it stoppable
+ */
 class locker
 {
 	private $session;
@@ -31,22 +30,20 @@ class locker
 		//Database connection
 		Database();
 
-		sqlQueryi("INSERT INTO `sessions` (`process`,`pid`,`sessionId`,`progress`,`start`,`state`) VALUES (?,?,?,?,?,?)", array(
-		"siisss",
-		$process,
-		getmypid(),
-		$session,
-		"0",
-		date("Y-m-d H:i:s"),
-		"Working"));
+		sqlQueryi("INSERT INTO `sessions` (`process`,`pid`,`sessionId`,`progress`,`start`,`state`) VALUES (?,?,?,?,?,?)", array("siisss",
+			$process,
+			getmypid(),
+			$session,
+			"0",
+			date("Y-m-d H:i:s"),
+			"Working"));
 	}
 
 	public function update($progress)
 	{
-		sqlQueryi("UPDATE `sessions` SET `progress` = ? WHERE `sessionId` = ?", array(
-		"si",
-		round($progress),
-		$this->session));
+		sqlQueryi("UPDATE `sessions` SET `progress` = ? WHERE `sessionId` = ?", array("si",
+			round($progress),
+			$this->session));
 	}
 
 	//Get session ID, don't know why..
@@ -63,27 +60,24 @@ class locker
 		if (!file_exists($cache . "lock_" . $this->session))
 		{
 			//Update state
-			sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `sessionId` = ?", array(
-			"ssi",
-			"Aborted",
-			date("Y-m-d H:i:s"),
-			$this->session));
-			
+			sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `sessionId` = ?", array("ssi",
+				"Aborted",
+				date("Y-m-d H:i:s"),
+				$this->session));
+
 			//Mark cache as 'old'
-			if (!touch($cacheExpire)) 
+			if (!touch($cacheExpire))
 			{
 				//Message
 				$logging->error("Failed to mark cache as old (" . $this->session . ")");
-			} 
-			else 
+			} else
 			{
 				//Message
 				$logging->info("Marked cache as old (" . $this->session . ")");
 			}
 
 			throw new Exception("Stopping, " . $this->session . ".lock doesn't exist");
-		}
-		else
+		} else
 		{
 			//Message
 			$logging->debug("Process continues (" . $this->session . ")");
@@ -96,25 +90,23 @@ class locker
 		global $logging, $cache, $cacheExpire;
 
 		unlink($cache . "lock_" . $this->session);
-		
+
 		//Mark cache as 'old'
-		if (!touch($cacheExpire)) 
+		if (!touch($cacheExpire))
 		{
 			//Message
 			$logging->error("Failed to mark cache as old (" . $this->session . ")");
-		} 
-		else 
+		} else
 		{
 			//Message
 			$logging->info("Marked cache as old (" . $this->session . ")");
 		}
 
 		//Update state
-		sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `sessionId` = ?", array(
-		"ssi",
-		"Finished",
-		date("Y-m-d H:i:s"),
-		$this->session));
+		sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `sessionId` = ?", array("ssi",
+			"Finished",
+			date("Y-m-d H:i:s"),
+			$this->session));
 
 		//Message
 		$logging->info("Process stopped (" . $this->session . ")");
