@@ -49,9 +49,9 @@ class imdb
         else
         {
             //Cache
-			$cacher = new cache("info_" . md5($id));
+			$_cache = new cache("info_" . md5($id));
 			
-            $content = $cacher->url("http://www.imdb.com/title/tt" . $id . "/");
+            $content = $_cache->url("http://www.imdb.com/title/tt" . $id . "/");
 
             if ($content)
             {
