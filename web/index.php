@@ -203,6 +203,13 @@ class index
         $this->sortURL = $this->newURL;
         unset($this->sortURL["sort"]);
 
+        //To avoid inconsistent caching..
+        //.. we add 'by' when it's not there!
+        if (!isset($this->sortURL["by"]))
+        {
+            $this->sortURL["by"] = "ASC";
+        }
+
         //Create URL for sorting
         self::URL("added", $this->sortURL, "Added", "sort", "SA");
         self::URL("imdb", $this->sortURL, "IMDB", "sort", "SI");
@@ -322,12 +329,12 @@ class index
                         //URL
                         $trackersURL .= "&tr=" . urlencode($value["tracker"]);
                     }
-					
+
                     //Calculate state
-					if($avg==0)
-					{
-						$state = "Dead";
-					}
+                    if ($avg == 0)
+                    {
+                        $state = "Dead";
+                    }
                     elseif (($avg / $count) > 2)
                     {
                         $state = "Good";
@@ -435,7 +442,29 @@ class index
     }
 }
 
-$show = new index();
-$show->show();
+//Cache class
+$_cache = new cache("page_" . md5($_SERVER["REQUEST_URI"]), false);
+
+if ($_cache->cached())
+{
+    //Cached content
+    print ($_cache->read());
+}
+else
+{
+    ob_start();
+
+    //Fresh content
+    $show = new index();
+    $show->show();
+
+    //Page content
+    $content = ob_get_contents();
+
+    ob_end_flush();
+
+    //Save content
+    $_cache->save($content);
+}
 
 ?>
