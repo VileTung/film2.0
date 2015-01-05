@@ -3,6 +3,7 @@ cache/*_*
 
 #Log
 *.txt
+*.html
 
 #Poster
 *.jpg
