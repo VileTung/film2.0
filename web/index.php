@@ -106,50 +106,49 @@ class index
 
     private function URL($type, $sort, $textG, $get, $extra, $upDown = true)
     {
-        //Check if there are any parameters
-        if (count($sort) > 0)
+        if (isset($_GET[$get]) && $_GET[$get] == $type)
         {
-            $URL = $sort;
-
-            if (isset($_GET[$get]) && $_GET[$get] == $type)
-            {
-                //No sort
-                if (!$upDown)
-                {
-                    $text = $textG;
-                    $class = "class=\"active\"";
-                }
-                //Sort
-                elseif (isset($sort["by"]) && $sort["by"] == "ASC")
-                {
-                    $URL["by"] = "DESC";
-                    $text = $textG . " &#8595;";
-                    $class = "class=\"active\"";
-                }
-                elseif (isset($sort["by"]) && $sort["by"] == "DESC")
-                {
-                    $URL["by"] = "ASC";
-                    $text = $textG . " &#8593;";
-                    $class = "class=\"active\"";
-                }
-            }
-            else
+            //No sort
+            if (!$upDown)
             {
                 $text = $textG;
-                $class = "";
+                $class = "class=\"active\"";
             }
-
-            $URL = "?" . http_build_query($URL) . "&" . $get . "=" . $type;
+            //Sort
+            elseif (isset($sort["by"]) && $sort["by"] == "ASC")
+            {
+                $sort["by"] = "DESC";
+                $text = $textG . " &#8595;";
+                $class = "class=\"active\"";
+            }
+            elseif (isset($sort["by"]) && $sort["by"] == "DESC")
+            {
+                $sort["by"] = "ASC";
+                $text = $textG . " &#8593;";
+                $class = "class=\"active\"";
+            }
         }
         else
         {
-            $URL = "?" . $get . "=" . $type;
             $text = $textG;
             $class = "";
         }
 
+        //If sort is not empty
+        if (count($sort) > 0)
+        {
+            $amp = http_build_query($sort) . "&";
+        }
+        //It's empty
+        else
+        {
+            $amp = "";
+        }
+
+        $url = "?" . $amp . $get . "=" . $type;
+
         //Template
-        $this->bTemplate->set("url" . $extra, $URL);
+        $this->bTemplate->set("url" . $extra, $url);
         $this->bTemplate->set("text" . $extra, $text);
         $this->bTemplate->set("class" . $extra, $class);
     }
