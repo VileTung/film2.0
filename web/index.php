@@ -442,7 +442,7 @@ class index
 }
 
 //Cache class
-$_cache = new cache("page_" . md5($_SERVER["REQUEST_URI"]), false);
+$_cache = new cache("page_" . md5($_SERVER["REQUEST_URI"]), true, false);
 
 if ($_cache->cached())
 {
