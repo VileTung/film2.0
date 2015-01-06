@@ -28,6 +28,9 @@ function sqlQueryi($query, $parameters = false, $result = false, $useCache = fal
 {
     global $MySQLi, $cache, $cacheExpire;
 
+    //Strip duplicated and unnecessary spaces
+    $query = preg_replace("~(?:\"[^\"]++\"|'[^']++'|`[^`]++`)(*SKIP)(*F)|\s{1,}~i", " ", $query);
+
     $md5Query = md5($query . serialize($parameters));
 
     //Check if we want cache
