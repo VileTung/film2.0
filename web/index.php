@@ -232,7 +232,7 @@ class index
         self::URL("musical", $this->genreURL, "Musical", "genre", "GMusica", false);
         self::URL("mystery", $this->genreURL, "Mystery", "genre", "GMy", false);
         self::URL("romance", $this->genreURL, "Romance", "genre", "GR", false);
-        self::URL("sci-Fi", $this->genreURL, "Sci-Fi", "genre", "GSc", false);
+        self::URL("sci-fi", $this->genreURL, "Sci-Fi", "genre", "GSc", false);
         self::URL("sport", $this->genreURL, "Sport", "genre", "GSp", false);
         self::URL("thriller", $this->genreURL, "Thriller", "genre", "GT", false);
         self::URL("war", $this->genreURL, "War", "genre", "GWa", false);
@@ -255,7 +255,7 @@ class index
         $movieCount = ceil($resultRows[0]["rows"] / 6);
         $pageCount = ceil($resultRows[0]["rows"] / 30);
 
-        //Limit total count to 60, for now..
+        //Limit 6 movies a row, for now..
         if ($movieCount > 6)
         {
             $movieCount = 6;
