@@ -23,7 +23,7 @@ if (isset($_POST["check" . date("Y")]) && $_POST["check" . date("Y")] == date("d
         private $parameters = false;
 
         //Default page limit
-        private $limit = "50";
+        private $limit = "0";
 
         //Total results
         private $total = array();
