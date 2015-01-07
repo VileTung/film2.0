@@ -27,6 +27,7 @@ $(document).on("click", "#clearCache", function() {
 /* Refresh page */
 $(document).on("click", "#refresh", function() {
 	refresh();
+	refreshWait();
 
 	return false;
 });
@@ -99,17 +100,59 @@ $(document).on("submit", "#startProcess", function(event) {
 		processD = $form.find("select[name='process']").val(),
 		startD = $form.find("input[name='start']").val(),
 		endD = $form.find("input[name='end']").val(),
+		waitD = $form.find("select[name='wait']").val(),
+		repeatD = $form.find("input[name='repeat']:checked").val(),
+		flowD = $form.find("select[name='flow']").val(),
+		dateD = $form.find("input[name='startDate']").val(),
+
 		url = $form.attr("action");
 
 	//Send data
 	var posting = $.post(url, {
 		process: processD,
 		start: startD,
-		end: endD
+		end: endD,
+		wait: waitD,
+		repeat: repeatD,
+		flow: flowD,
+		startDate: dateD
 	});
 
 	/* Reset form */
 	$("#startProcess").trigger("reset");
+
+	//Put the results in a div
+	posting.done(function(data) {
+		processData(data);
+	}, "json");
+});
+
+/* Start master processor */
+$(document).on("submit", "#masterProcessor", function(event) {
+	//Stop form from submitting normally
+	event.preventDefault();
+
+	//Get values
+	var $form = $(this),
+		type = $form.find("input[name='type']").val(),
+		sessionId = $form.find("input[name='sessionId']").val(),
+		url = $form.attr("action");
+
+	//Start
+	if (type == "start") {
+		//Send start data
+		var posting = $.post(url, {
+			processor: type
+		});
+	} else if (type == "stop") {
+		//Send stop data
+		var posting = $.post(url, {
+			stop: sessionId,
+		});
+	}
+
+	/* Reset form */
+	$("#masterProcessor").trigger("reset");
 
 	//Put the results in a div
 	posting.done(function(data) {
@@ -125,12 +168,38 @@ function refresh() {
 
 	//Send data
 	var posting = $.post("action.php", {
-		refresh: "process"
+		refresh: "process",
+		type: "process"
 	});
 
 	//Put the results in the table
 	posting.done(function(data) {
 		$("#list").fadeOut("fast", function() {
+			$(this).empty().html(data).fadeIn("fast");
+
+			//We have to bind it again!
+			$(function() {
+				$("[data-toggle=\"tooltip\"]").tooltip();
+			});
+		});
+	});
+}
+
+/* Reload 'wait for' processes */
+function refreshWait() {
+	$("#wait").fadeOut("fast", function() {
+		$(this).empty().append("<option value=\"0\">Loading...</option>").fadeIn("fast");
+	});
+
+	//Send data
+	var posting = $.post("action.php", {
+		refresh: "process",
+		type: "waitFor"
+	});
+
+	//Put the results in the table
+	posting.done(function(data) {
+		$("#wait").fadeOut("fast", function() {
 			$(this).empty().html(data).fadeIn("fast");
 
 			//We have to bind it again!
@@ -152,7 +221,13 @@ function processData(data) {
 			$("#message").delay(1000).fadeOut("slow", function() {
 				$("#page").fadeIn("slow");
 				refresh();
+				refreshWait();
 			});
 		});
 	});
 }
+
+jQuery("#startDate").datetimepicker({
+	format: 'Y-m-d H:i:s',
+	mask: true
+});

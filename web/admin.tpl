@@ -11,7 +11,11 @@
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	
+
+	<!-- jQuery Datetime picker -->
+	<link href="css/jquery.datetimepicker.css" rel="stylesheet">
+
+
 	<!-- Extra -->
 	<link href="css/table.min.css" rel="stylesheet">
 
@@ -57,6 +61,9 @@
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="js/bootstrap.min.js"></script>
 
+		<!-- jQuery Datetime picker -->
+		<script src="js/jquery.datetimepicker.js"></script>
+
 		<div class="page-header">
 			<h1>Film2.0 - Administration!</h1>
 		</div>
@@ -87,6 +94,19 @@
 				Default text
 			</div>
 			<div id="page">
+                <form role="form" method="post" action="action.php" id="masterProcessor">
+				<div class="alert alert-<tag:sanity.class />">
+					<span>The process is currently: </span><span class="label label-<tag:sanity.class />"><tag:sanity.state /></span>
+					<br />
+					<span><tag:sanity.text /></span>
+					<br />
+					<br />
+                    <input type="hidden" name="type" value="<tag:sanity.type />">
+                    <input type="hidden" name="sessionId" value="<tag:sanity.sessionId />">
+					<button type="submit" class="btn btn-default" <tag:sanity.start />><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</button>
+					<button type="submit" class="btn btn-default" <tag:sanity.stop />><span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop</button>
+				</div>
+                </form>
 				<form role="form" method="post" action="action.php" id="startProcess">
 					<div class="form-group">
 						<label for="process">Process:</label>
@@ -102,6 +122,42 @@
 						<label for="end">Stop at page:</label>
 						<input type="number" name="end" class="form-control" id="end" placeholder="End" required="true">
 					</div>
+
+					<div class="form-group">
+						<label for="wait">Wait for other process to finish:</label>
+						<select name="wait" class="form-control" id="wait">
+							<option value="0">None</option>
+							<loop:waitFor>
+								<option value="<tag:waitFor[].id />">
+									<tag:waitFor[].value />
+								</option>
+							</loop:waitFor>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="repeat">Repeat process:</label>
+						<br />
+						<input type="radio" name="repeat" id="repeatT" value="true" required="true"> Yes
+						<br />
+						<input type="radio" name="repeat" id="repeatF" value="false" required="true" checked="true"> No
+					</div>
+					<div class="form-group">
+						<label for="flow">Repeat flow:</label>
+						<select name="flow" class="form-control" id="flow">
+							<option value=""><em>None</em>
+							</option>
+							<option value="hour">Hourly</option>
+							<option value="day">Daily</option>
+							<option value="week">Weekly</option>
+							<option value="month">Monthly</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="startDate">Start date:</label>
+						<input type="text" name="startDate" class="form-control" id="startDate" placeholder="Start date" required="true">
+					</div>
+
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
 				<br />
@@ -147,7 +203,6 @@
 										</td>
 									</tr>
 								</loop:processes>
-								
 							</tbody>
 						</table>
 					</div>
