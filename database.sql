@@ -45,6 +45,19 @@ CREATE TABLE `imdb` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `process`;
+CREATE TABLE `process` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) unsigned NOT NULL,
+  `wait` int(10) unsigned NOT NULL,
+  `process` varchar(250) NOT NULL,
+  `repeat` enum('true','false') NOT NULL DEFAULT 'false',
+  `flow` enum('hour','day','week','month') NOT NULL DEFAULT 'week',
+  `start` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -82,4 +95,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-12-12 19:09:59
+-- 2015-01-07 15:37:49
