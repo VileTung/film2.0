@@ -23,8 +23,8 @@ if (isset($_POST) && count($_POST) > 0)
 
         //Add new process to the DB
         sqlQueryi("INSERT INTO `process` (`wait`, `process`, `repeat`, `flow`, `start`) VALUES (?, ?, ?, ?, ?)", array(
-            "issss",
-            $_POST["wait"],
+            "sssss",
+            $_POST["wait"] . "@",
             $cmd,
             $_POST["repeat"],
             $_POST["flow"],

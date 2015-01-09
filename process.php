@@ -56,7 +56,7 @@ try
                 elseif ($fetch["pid"] == "0")
                 {
                     //Check if we need to wait
-                    list($waitRows, $waitResult) = sqlQueryi("SELECT * FROM `process` WHERE `id` = ?", array("i", $fetch["wait"]), true);
+                    list($waitRows, $waitResult) = sqlQueryi("SELECT `id` FROM `process` WHERE `id` = ?", array("i", $fetch["wait"]), true);
 
                     if ($waitRows == 0)
                     {
@@ -80,14 +80,28 @@ try
                                     break;
                             }
 
-                            //Repeat and wait?
-                            if ($fetch["wait"] != 0)
+                            //Search if there are any other processes that wants us to wait
+                            list($waitRepeatRows, $waitRepeatResult) = sqlQueryi("SELECT `id` FROM `process` WHERE `wait` LIKE ?", array("s", "%" . $fetch["id"] . "@%"), true);
+
+                            //If we have to wait for multiple processes
+                            if ($waitRepeatRows > 0)
                             {
-                                $wait = $fetch["id"];
+                                $wait = "";
+
+                                foreach ($waitRepeatResult as $wValue)
+                                {
+                                    $wait .= ($wait == "" ? "" : "|") . $wValue["id"] . "@";
+                                }
                             }
+                            //Repeat and wait? (Regular)
+                            elseif ($fetch["wait"] != 0)
+                            {
+                                $wait = $fetch["id"] . "@";
+                            }
+                            //No waiting required
                             else
                             {
-                                $wait = 0;
+                                $wait = "0@";
                             }
 
                             //Add new entry
