@@ -25,8 +25,8 @@ class openSubtitles
         $this->settings = new settings();
 
         //Calc datetime
-        $dateTime = (int)$this->settings->get("OpenSubtitles", "dateTime") + (60 * 60 * 24);
-        $now = time();
+        $dateTime = (int)$this->settings->get("osDateTime") + (60 * 60 * 24);
+        $now = time();	
 
         //Reset dateTime
         if ($now > $dateTime)
@@ -34,13 +34,13 @@ class openSubtitles
             //Message
             $logging->info("Reset dateTime");
 
-            $this->settings->set("OpenSubtitles", "count", "0");
-            $this->settings->set("OpenSubtitles", "dateTime", time());
-            $this->settings->set("OpenSubtitles", "enabled", "true");
+            $this->settings->set("osCount", "0");
+            $this->settings->set("osDateTime", time());
+            $this->settings->set("osEnabled", "true");
         }
 
         //Allowed?
-        if ($this->settings->get("OpenSubtitles", "enabled"))
+        if ($this->settings->get("osEnabled"))
         {
             //Default value
             $this->failed = false;
@@ -141,20 +141,20 @@ class openSubtitles
             }
 
             //Get count
-            $osCount = $this->settings->get("OpenSubtitles", "count");
+            $osCount = $this->settings->get("osCount");
 
             if ($osCount >= 200)
             {
-                $this->settings->set("OpenSubtitles", "enabled", "false");
+                $this->settings->set("osEnabled", "false");
 
-                throw new Exception("Limit reached (" . $this->settings->get("OpenSubtitles", "count") . ")!");
+                throw new Exception("Limit reached (" . $osCount . ")!");
             }
             //Update count
             else
             {
                 $osCount++;
 
-                $this->settings->set("OpenSubtitles", "count", $osCount);
+                $this->settings->set("osCount", $osCount);
 
                 //Message
                 $logging->debug("Subtitle count: " . $osCount);

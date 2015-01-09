@@ -11,44 +11,49 @@ class settings
     //All our settings
     private $ini;
 
-    public function __construct()
-    {
-        global $iniSettings;
-
-        //Read file
-        $this->ini = parse_ini_file($iniSettings, true);
-    }
-
     //Read
-    public function get($section, $name)
+    public function get($key)
     {
-        $value = $this->ini[$section][$name];
+        //Make a database connection
+        Database();
 
-        //Boolean?
-        if ($value == "true")
+        list($rowCount, $result) = sqlQueryi("SELECT `value` FROM `settings` WHERE `key` = ? LIMIT 1", array("s", $key), true);
+
+        //Value
+        $value = $result[0]["value"];
+
+        //If result
+        if ($rowCount > 0)
         {
-            return true;
+            //Boolean?
+            if ($value == "true")
+            {
+                return true;
+            }
+            //Boolean?
+            elseif ($value == "false")
+            {
+                return false;
+            }
+            //Regular value
+            else
+            {
+                //Return
+                return $value;
+            }
         }
-        //Boolean?
-        elseif ($value == "false")
-        {
-            return false;
-        }
-        //Regular value
+        //Nothing found
         else
         {
-            //Return
-            return $value;
+            return "error";
         }
     }
 
     //Save
-    public function set($section, $name, $value, $bool = false)
+    public function set($key, $value)
     {
-        global $iniSettings;
-
         //Check if value is a boolean
-        if ($bool)
+        if (is_bool($value))
         {
             if ($value)
             {
@@ -60,40 +65,13 @@ class settings
             }
         }
 
-        //Set new value
-        $this->ini[$section][$name] = $value;
+        //Make a database connection
+        Database();
 
-        //Default
-        $return = "";
-
-        //Loop through array
-        foreach ($this->ini as $key => $value)
-        {
-            $return .= "[" . $key . "]\n";
-
-            foreach ($value as $key => $string)
-            {
-                $return .= $key . "=\"" . $string . "\";\n";
-            }
-
-            $return .= "\n";
-        }
-
-        $return = trim($return);
-
-        //Save settings
-        $state = file_put_contents($iniSettings, $return, LOCK_EX);
-
-        if ($state > 0)
-        {
-            //Success
-            return true;
-        }
-        else
-        {
-            //Failed
-            return false;
-        }
+        sqlQueryi("UPDATE `settings` SET `value` = ? WHERE `key` = ?", array(
+            "ss",
+            $value,
+            $key));
     }
 }
 

@@ -42,7 +42,6 @@ $subtitle = $root . "subtitle/";
 
 //Additional files
 $cacheExpire = $functions . "cache";
-$iniSettings = $functions . "settings.ini";
 
 //Load additional functions
 require_once ($functions . "cache.php");

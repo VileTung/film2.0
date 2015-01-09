@@ -73,6 +73,20 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE `settings` (
+  `key` varchar(250) NOT NULL,
+  `value` varchar(250) NOT NULL,
+  UNIQUE KEY `key` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `settings` (`key`, `value`) VALUES
+('osCount',	'0'),
+('osDateTime',	'1420801072'),
+('osEnabled',	'true'),
+('pLastUpdate',	'1420801589'),
+('pSessionId',	'36853');
+
 DROP TABLE IF EXISTS `subtitle`;
 CREATE TABLE `subtitle` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
@@ -95,4 +109,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2015-01-07 15:37:49
+-- 2015-01-09 11:11:01

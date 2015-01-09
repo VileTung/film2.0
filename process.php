@@ -26,7 +26,7 @@ $session = $locker->getSession();
 $_settings = new settings();
 
 //Set sessionId settings.ini
-$_settings->set("Process", "sessionId", $session);
+$_settings->set("pSessionId", $session);
 
 //Starts logging
 $logging = new loggen($log . $session);
@@ -135,7 +135,7 @@ try
         $logging->info("Going to sleep");
 
         //Set last update in settings.ini
-        $_settings->set("Process", "lastUpdate", time());
+        $_settings->set("pLastUpdate", time());
 
         //Wait 5 minutes
         sleep(60 * 5);

@@ -105,7 +105,7 @@ class admin
         $_settings = new settings();
 
         //Calc difference
-        $difference = time() - $_settings->get("Process", "lastUpdate");
+        $difference = time() - $_settings->get("pLastUpdate");
 
         //OK
         if ($difference > 0 && $difference < (60 * 5))
@@ -117,17 +117,15 @@ class admin
                 "start" => "disabled",
                 "stop" => "",
                 "type" => "stop",
-                "sessionId" => $_settings->get("Process", "sessionId")));
+                "sessionId" => $_settings->get("pSessionId")));
         }
         //Process is not running
         else
         {
-            $_settings = new settings();
-
             $this->bTemplate->set("sanity", array(
                 "class" => "danger",
                 "state" => "Stopped!",
-                "text" => "Sanity should've taken place <strong>" . self::convertSeconds($difference) . "</strong> ago!",
+                "text" => "Sanity should've taken place <strong>" . self::convertSeconds($difference - (60 * 5)) . "</strong> ago!",
                 "start" => "",
                 "stop" => "disabled",
                 "type" => "start",
