@@ -1,5 +1,7 @@
 #Cache folder
 cache/*_*
+cache/process
+cache/[0-9]*
 
 #Log
 *.txt
