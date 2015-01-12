@@ -33,6 +33,23 @@ if (isset($_POST) && count($_POST) > 0)
         //Print
         print (json_encode(array("state" => "alert alert-success", "message" => "Successfully added process to the queue!")));
     }
+    //Delete a process
+    elseif (isset($_POST["processD"]) && $_POST["processD"] == "delete")
+    {
+        require_once ("./../functions/functions.php");
+
+        //JSON Header
+        header("Content-type: application/json");
+
+        //Make the connection
+        Database();
+
+        //Delete process
+        sqlQueryi("UPDATE `process` SET `process` = 'sleep 1', `repeat` = 'false' WHERE `id` = ?", array("i", $_POST["id"]));
+
+        //Print
+        print (json_encode(array("state" => "alert alert-success", "message" => "Successfully added process to the queue!")));
+    }
     //Start the processor
     elseif (isset($_POST["processor"]) && $_POST["processor"] == "start")
     {
@@ -147,9 +164,9 @@ if (isset($_POST) && count($_POST) > 0)
         $show = new admin();
 
         //Refresh processes
-        if ($_POST["type"] == "process")
+        if ($_POST["type"] == "session")
         {
-            $data = $show->getProcess();
+            $data = $show->getSession();
 
             //Loop through data
             foreach ($data as $key => $value)

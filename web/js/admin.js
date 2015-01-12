@@ -7,6 +7,25 @@ $(function() {
 	$("[data-toggle=\"tooltip\"]").tooltip();
 });
 
+/* Delete process */
+$(document).on("click", ".deleteProcess", function() {
+	var url = $(this).attr("data-href");
+    var idD = $(this).attr("data-id");
+
+	//Send data
+	var posting = $.post(url, {
+		processD: "delete",
+        id: idD,
+	});
+
+	//Put the results in a div
+	posting.done(function(data) {
+		processData(data);
+	}, "json");
+
+	return false;
+});
+
 /* Mark cache as old */
 $(document).on("click", "#clearCache", function() {
 	var url = $(this).attr("data-href");
@@ -169,7 +188,7 @@ function refresh() {
 	//Send data
 	var posting = $.post("action.php", {
 		refresh: "process",
-		type: "process"
+		type: "session"
 	});
 
 	//Put the results in the table
@@ -180,6 +199,12 @@ function refresh() {
 			//We have to bind it again!
 			$(function() {
 				$("[data-toggle=\"tooltip\"]").tooltip();
+			});
+            
+            //We have to bind it again!
+			$("#startDate").datetimepicker({
+				format: 'Y-m-d H:i:s',
+				mask: true
 			});
 		});
 	});
@@ -206,6 +231,13 @@ function refreshWait() {
 			$(function() {
 				$("[data-toggle=\"tooltip\"]").tooltip();
 			});
+            
+            //We have to bind it again!
+			$("#startDate").datetimepicker({
+				format: 'Y-m-d H:i:s',
+				mask: true
+			});
+
 		});
 	});
 }
@@ -227,7 +259,7 @@ function processData(data) {
 	});
 }
 
-jQuery("#startDate").datetimepicker({
+$("#startDate").datetimepicker({
 	format: 'Y-m-d H:i:s',
 	mask: true
 });

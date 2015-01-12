@@ -77,7 +77,7 @@
 					</div>
 					<div class="modal-body">
 						<p>You are about to stop or kill this session, this procedure is irreversible.</p>
-						<p>Stop is a friendly way of stopping the process, while kill is not so friendly.</p>
+						<p>Stop is a friendly way of stopping this session, while kill is not so friendly.</p>
 						<p>Do you want to proceed?</p>
 					</div>
 					<div class="modal-footer">
@@ -166,7 +166,7 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>Process</th>
+									<th>Session</th>
 									<th>State</th>
 									<th>Progress</th>
 									<th>Start</th>
@@ -176,30 +176,76 @@
 								</tr>
 							</thead>
 							<tbody id="list">
-								<loop:processes>
+								<loop:sessions>
 									<tr>
 										<td>
-											<tag:processes[].process />
+											<tag:sessions[].process />
 										</td>
 										<td>
-											<span style="color: <tag:processes[].active />"><tag:processes[].state /></span>
+											<span style="color: <tag:sessions[].active />"><tag:sessions[].state /></span>
 										</td>
 										<td>
 											<div class="progress" style="margin-bottom: 0px;">
-												<div data-toggle="tooltip" title="Complete: <tag:processes[].progress />%" style="width: <tag:processes[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:processes[].progress />" role="progressbar" class="progress-bar <tag:processes[].class />"><span class="sr-only"><tag:processes[].progress />% complete</span>
+												<div data-toggle="tooltip" title="Complete: <tag:sessions[].progress />%" style="width: <tag:sessions[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:sessions[].progress />" role="progressbar" class="progress-bar <tag:sessions[].class />"><span class="sr-only"><tag:sessions[].progress />% complete</span>
 												</div>
 											</div>
 										</td>
 										<td>
+											<tag:sessions[].start />
+										</td>
+										<td>
+											<tag:sessions[].end />
+										</td>
+										<td><a target="_blank" href="./../log/<tag:sessions[].sessionId />.html">Click</a>
+										</td>
+										<td>
+											<tag:sessions[].working />
+										</td>
+									</tr>
+								</loop:sessions>
+							</tbody>
+						</table>
+					</div>
+                    <div class="col-md-12">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Process</th>
+									<th>PID</th>
+									<th>Wait</th>
+									<th>Repeat</th>
+									<th>Flow</th>
+                                    <th>Start</th>
+                                    <th>Stop</th>
+								</tr>
+							</thead>
+							<tbody id="list">
+								<loop:processes>
+									<tr>
+										<td>
+											<tag:processes[].id />
+										</td>
+										<td>
+											<tag:processes[].process />
+										</td>
+										<td>
+											<tag:processes[].pid />
+										</td>
+										<td>
+											<tag:processes[].wait />
+										</td>
+										<td>
+											<tag:processes[].repeat />
+										</td>
+                                        <td>
+											<tag:processes[].flow />
+										</td>
+                                        <td>
 											<tag:processes[].start />
 										</td>
 										<td>
-											<tag:processes[].end />
-										</td>
-										<td><a target="_blank" href="./../log/<tag:processes[].sessionId />.html">Click</a>
-										</td>
-										<td>
-											<tag:processes[].working />
+                                            <a class="deleteProcess" data-href="action.php" data-id="<tag:processes[].id />" href="#">Delete</a>
 										</td>
 									</tr>
 								</loop:processes>

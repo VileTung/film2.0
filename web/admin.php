@@ -28,7 +28,7 @@ class admin
     }
 
     //Get processes
-    public function getProcess()
+    public function getSession()
     {
         //Get all sessions
         list($rowCount, $result) = sqlQueryi("SELECT * FROM `sessions`", false, true);
@@ -75,6 +75,15 @@ class admin
         return $result;
     }
 
+    //Get processes
+    public function getProcess()
+    {
+        //Get all processes
+        list($rowCount, $result) = sqlQueryi("SELECT * FROM `process`", false, true);
+
+        return $result;
+    }
+    
     //Get the 'wait for' processes
     public function waitFor()
     {
@@ -96,6 +105,9 @@ class admin
     public function show()
     {
         //Get all sessions
+        $this->bTemplate->set("sessions", self::getSession());
+        
+        //Get all processes
         $this->bTemplate->set("processes", self::getProcess());
 
         //Get all 'wait for' processes
