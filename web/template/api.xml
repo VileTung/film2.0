@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+    <if:movieFound>
+        <loop:movies>
+            <movie>
+                <title>
+                    <tag:movies[].title />
+                </title>
+                <imdb>
+                    <tag:movies[].imdb />
+                </imdb>
+                <description>
+                    <tag:movies[].description />
+                </description>
+                <runtime>
+                    <tag:movies[].runtime />
+                </runtime>
+                <rating>
+                    <tag:movies[].rating />
+                </rating>
+                <release>
+                    <tag:movies[].release />
+                </release>
+                <added>
+                    <tag:movies[].added />
+                </added>
+				<titleCutted>
+                    <tag:movies[].titleCutted />
+                </titleCutted>
+                <loop:movies[].torrent>
+                    <torrent>
+                        <url>
+                            <tag:movies[].torrent[].hash />
+                        </url>
+                        <quality>
+                            <tag:movies[].torrent[].quality />
+                        </quality>
+                        <state>
+                            <tag:movies[].torrent[].added />
+                        </state>
+                        <size>
+                            <tag:movies[].torrent[].size />
+                        </size>
+						<sizeReadable>
+                            <tag:movies[].torrent[].sizeReadable />
+                        </sizeReadable>
+							<loop:movies[].torrent[].trackers>
+							<tracker>
+								<tracker>
+									<tag:movies[].torrent[].trackers[].tracker />
+								</tracker>
+								<leechers>
+									<tag:movies[].torrent[].trackers[].leechers />
+								</leechers>
+								<seeders>
+									<tag:movies[].torrent[].trackers[].seeders />
+								</seeders>
+								</tracker>
+							</loop:movies[].torrent[].trackers>
+                    </torrent>
+                </loop:movies[].torrent>
+                <loop:movies[].subtitle>
+                    <subtitle>
+                        <hash>
+                            <tag:movies[].subtitle[].hash />
+                        </hash>
+                        <language>
+                            <tag:movies[].subtitle[].language />
+                        </language>
+                    </subtitle>
+                </loop:movies[].subtitle>
+				<loop:movies[].genre>
+                    <genre>
+                        <genre>
+                            <tag:movies[].genre[].genre />
+                        </genre>
+                    </genre>
+                </loop:movies[].genre>
+            </movie>
+        </loop:movies>
+	<else:movieFound>
+		<error id="<tag:error />"><tag:message /></error>
+	</if:movieFound>
+</collection>

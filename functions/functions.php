@@ -39,6 +39,7 @@ $log = $root . "log/";
 $poster = $root . "poster/";
 $scraper = $root . "scraper/";
 $subtitle = $root . "subtitle/";
+$web = $root . "web/";
 
 //Additional files
 $cacheExpire = $functions . "cache";
@@ -56,6 +57,10 @@ require_once ($functions . "settings.php");
 require_once ($functions . "sqlQuery.php");
 require_once ($functions . "subtitle.php");
 require_once ($functions . "torrent.php");
+
+//Load web-related functions
+require_once ($web . "bTemplate.php");
+require_once ($web . "data.php");
 
 //Scrapers
 require_once ($scraper . "openSubtitles.php");
@@ -83,6 +88,23 @@ function cURL($url)
     {
         //Failed, send information
         return array(false, $e->getMessage());
+    }
+}
+
+//Check if process is active
+function processAlive($pid)
+{
+    $process = exec("ps cax | grep " . $pid);
+
+    if (empty($process))
+    {
+        //Dead
+        return false;
+    }
+    else
+    {
+        //Active
+        return true;
     }
 }
 

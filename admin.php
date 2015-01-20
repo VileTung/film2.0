@@ -3,7 +3,7 @@
 /**
  * @author Kevin
  * @copyright 2015
- * @info Web interface
+ * @info Admin web interface
  */
 
 require_once ("functions/functions.php");
@@ -11,6 +11,6 @@ require_once ("functions/functions.php");
 //Template
 $bTemplate = new bTemplate();
 
-print ($bTemplate->fetch($web . "template/index.html"));
+print ($bTemplate->fetch($web . "template/admin.html"));
 
 ?>

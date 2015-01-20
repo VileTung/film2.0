@@ -1,265 +1,308 @@
-$("#confirm-delete").on("show.bs.modal", function(e) {
-	$(this).find(".danger").attr("data-href", "action.php").attr("data-pid", $(e.relatedTarget).data("pid"));
-	$(this).find(".warning").attr("data-href", "action.php").attr("data-session", $(e.relatedTarget).data("session"));
+/**
+ * @author Kevin
+ * @copyright 2015
+ * @info Admin AJaX calls
+ */
+/* Needed for modal */
+$("#confirm-delete").on("show.bs.modal", function(e)
+{
+    $(this).find(".danger").attr("data-pid", $(e.relatedTarget).data("pid"));
+    $(this).find(".warning").attr("data-session", $(e.relatedTarget).data("session"));
 })
 
-$(function() {
-	$("[data-toggle=\"tooltip\"]").tooltip();
+/* Needed for date */
+function addZero(i)
+{
+    if (i < 10)
+    {
+        i = "0" + i;
+    }
+    return i;
+}
+
+/* Send a POST-request, with a HTML response */
+function postDataHTML(identifier, post, fade, fresh)
+{
+    /* Security check */
+    var date = new Date();
+
+    /* Set our post data */
+    post["check" + date.getFullYear()] = addZero(date.getDate()) + addZero(date.getMonth() + 1) + date.getFullYear();
+    post["return"] = "html";
+
+    /* Show a loading message */
+    if (fresh)
+    {
+        $(identifier).fadeOut("fast", function()
+        {
+            $(this).empty().html("Loading...").fadeIn("fast");
+        });
+    }
+
+    /* Send the POST-request */
+    $.post("web/action.php", post)
+        .done(function(data)
+        {
+            /* FadeIn & FadeOut effect */
+            if (fade)
+            {
+                $(identifier).fadeOut("slow", function()
+                {
+                    $(this).empty().html(data).fadeIn("slow");
+
+                    //We have to bind it again!
+                    $(function()
+                    {
+                        $("[data-toggle=\"tooltip\"]").tooltip();
+                    });
+                });
+            }
+            /* No effects */
+            else
+            {
+                $(identifier).empty().html(data);
+
+                //We have to bind it again!
+                $(function()
+                {
+                    $("[data-toggle=\"tooltip\"]").tooltip();
+                });
+            }
+        });
+}
+
+/* Send a POST-request, with a JSON response */
+function postDataJSON(post)
+{
+    /* Security check */
+    var date = new Date();
+
+    /* Set our post data */
+    post["check" + date.getFullYear()] = addZero(date.getDate()) + addZero(date.getMonth() + 1) + date.getFullYear();
+    post["return"] = "json";
+
+    /* Send the POST-request */
+    $.post("web/action.php", post)
+        .done(function(data)
+        {
+            /* Set message */
+            $("#message").empty().append(data.message);
+            $("#message").removeClass("alert-danger alert-success").addClass(data.state);
+
+            /* Show message */
+            $("#message").fadeIn("slow", function()
+            {
+                $("#message").delay(1000).fadeOut("slow");
+
+                //We have to bind it again!
+                $(function()
+                {
+                    $("[data-toggle=\"tooltip\"]").tooltip();
+                });
+            });
+        }, "json");
+}
+
+/* Load default page (movies) */
+$(document).ready(function()
+{
+    /* Get master process state */
+    postDataHTML("#masterProcess",
+    {
+        "type": "adminState"
+    }, true, false);
+
+    /* Get session list */
+    postDataHTML("#sessionList",
+    {
+        "type": "adminSessions"
+    }, true, false);
+
+    /* Get process list */
+    postDataHTML("#processList",
+    {
+        "type": "adminProcesses"
+    }, true, false);
 });
 
-/* Delete process */
-$(document).on("click", ".deleteProcess", function() {
-	var url = $(this).attr("data-href");
-    var idD = $(this).attr("data-id");
+/* Start/stop master process */
+$(document).on("submit", "#masterStartStop", function(event)
+{
+    /* Stop form from submitting normally */
+    event.preventDefault();
 
-	//Send data
-	var posting = $.post(url, {
-		processD: "delete",
-        id: idD,
-	});
+    /* Get data */
+    postDataJSON(
+    {
+        "type": "adminMasterProcess"
+    });
 
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-
-	return false;
+    /* Get master process state */
+    postDataHTML("#masterProcess",
+    {
+        "type": "adminState"
+    }, true, false);
 });
 
-/* Mark cache as old */
-$(document).on("click", "#clearCache", function() {
-	var url = $(this).attr("data-href");
+/* Show add process form */
+$(document).on("click", "#plusClick", function()
+{
+    /* Get add process data */
+    postDataHTML("#showAdd",
+    {
+        "type": "adminProcessForm"
+    }, false, false);
 
-	//Send data
-	var posting = $.post(url, {
-		markCache: "cache",
-	});
-
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-
-	return false;
+    $("#showPlus").fadeOut("slow", function()
+    {
+        $("#showMinus").fadeIn("slow", function()
+        {
+            $("#showAdd").fadeIn("slow");
+        });
+    });
 });
 
-/* Refresh page */
-$(document).on("click", "#refresh", function() {
-	refresh();
-	refreshWait();
-
-	return false;
+/* Hide add process form */
+$(document).on("click", "#minusClick", function()
+{
+    $("#showMinus").fadeOut("slow", function()
+    {
+        $("#showPlus").fadeIn("slow", function()
+        {
+            $("#showAdd").fadeOut("slow");
+        });
+    });
 });
 
-/* Clean */
-$(document).on("click", ".clean", function() {
+/* Show extra options on change */
+$(document).on("change", "#process", function()
+{
+    var value = $(this).val();
+
+    /* Get YTS options */
+    if (value == "yts")
+    {
+        postDataHTML("#processOptions",
+        {
+            "type": "adminOptions",
+            "option": "yts"
+        }, true, false);
+    }
+    else
+    {
+        $("#processOptions").fadeOut("slow", function()
+        {
+            $(this).empty();
+        });
+    }
+});
+
+/* Add a new process */
+$(document).on("submit", "#addProcess", function(event)
+{
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    /* Hide form */
+    $("#showMinus").fadeOut("slow", function()
+    {
+        $("#showPlus").fadeIn("slow", function()
+        {
+            $("#showAdd").fadeOut("slow", function()
+            {
+                /* Get data */
+                postDataJSON(
+                {
+                    "type": "adminAddProcess",
+                    "process": $("#addProcess").find("select[name='process']").val(),
+                    "wait": $("#addProcess").find("select[name='wait']").val(),
+                    "repeat": $("#addProcess").find("input[name='repeat']:checked").val(),
+                    "flow": $("#addProcess").find("select[name='flow']").val(),
+
+                    /* YTS */
+                    "begin": $("#addProcess").find("input[name='start']").val(),
+                    "end": $("#addProcess").find("input[name='end']").val()
+                });
+
+                /* Reset form */
+                $("#addProcess").trigger("reset");
+            });
+        });
+    });
+});
+
+/* Remove a stopped session */
+$(document).on("click", ".removeProcess", function()
+{
+    /*Get sessionId */
+    var sessionId = $(this).attr("data-session");
+
+    /* Get data */
+    postDataJSON(
+    {
+        "type": "adminRemoveSession",
+        "id": sessionId
+    });
+
+    /* Remove row, so we don't need to refresh everything */
+    $("#sessionRow" + sessionId).fadeOut("slow", function()
+    {
+        $(this).remove();
+    })
+
+    return false;
+});
+
+/* Stop an active session */
+$(document).on("click", ".warning", function() 
+{
+	/*Get sessionId */
 	var sessionId = $(this).attr("data-session");
-	var url = $(this).attr("data-href");
 
-	//Send data
-	var posting = $.post(url, {
-		clean: sessionId,
-	});
+	/* Get data */
+    postDataJSON(
+    {
+        "type": "adminStopSession",
+        "id": sessionId
+    });
 
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-
-	return false;
-});
-
-/* Stop */
-$(document).on("click", ".warning", function() {
-	var sessionId = $(this).attr("data-session");
-	var url = $(this).attr("data-href");
-
-	//Send data
-	var posting = $.post(url, {
-		stop: sessionId,
-	});
-
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-
+	/* Close modalbox*/
 	$("#confirm-delete").modal("toggle");
 
 	return false;
 });
 
-/* Kill */
-$(document).on("click", ".danger", function() {
+/* Kill an active (or dead) session */
+$(document).on("click", ".danger", function() 
+{
+	/*Get PID */
 	var pid = $(this).attr("data-pid");
-	var url = $(this).attr("data-href");
 
-	//Send data
-	var posting = $.post(url, {
-		kill: pid,
-	});
+	/* Get data */
+    postDataJSON(
+    {
+        "type": "adminKillSession",
+        "id": pid
+    });
 
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-
+	/* Close modalbox*/
 	$("#confirm-delete").modal("toggle");
 
 	return false;
 });
 
-/* Start */
-$(document).on("submit", "#startProcess", function(event) {
-	//Stop form from submitting normally
-	event.preventDefault();
+/* Delete a process */
+$(document).on("click", ".deleteProcess", function()
+{
+    /*Get ID */
+    var id = $(this).attr("data-id");
 
-	//Get values
-	var $form = $(this),
-		processD = $form.find("select[name='process']").val(),
-		startD = $form.find("input[name='start']").val(),
-		endD = $form.find("input[name='end']").val(),
-		waitD = $form.find("select[name='wait']").val(),
-		repeatD = $form.find("input[name='repeat']:checked").val(),
-		flowD = $form.find("select[name='flow']").val(),
-		dateD = $form.find("input[name='startDate']").val(),
+    /* Get data */
+    postDataJSON(
+    {
+        "type": "adminRemoveProcess",
+        "id": id
+    });
 
-		url = $form.attr("action");
-
-	//Send data
-	var posting = $.post(url, {
-		process: processD,
-		start: startD,
-		end: endD,
-		wait: waitD,
-		repeat: repeatD,
-		flow: flowD,
-		startDate: dateD
-	});
-
-	/* Reset form */
-	$("#startProcess").trigger("reset");
-
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-});
-
-/* Start master processor */
-$(document).on("submit", "#masterProcessor", function(event) {
-	//Stop form from submitting normally
-	event.preventDefault();
-
-	//Get values
-	var $form = $(this),
-		type = $form.find("input[name='type']").val(),
-		sessionId = $form.find("input[name='sessionId']").val(),
-		url = $form.attr("action");
-
-	//Start
-	if (type == "start") {
-		//Send start data
-		var posting = $.post(url, {
-			processor: type
-		});
-	} else if (type == "stop") {
-		//Send stop data
-		var posting = $.post(url, {
-			stop: sessionId,
-		});
-	}
-
-	/* Reset form */
-	$("#masterProcessor").trigger("reset");
-
-	//Put the results in a div
-	posting.done(function(data) {
-		processData(data);
-	}, "json");
-});
-
-/* Reload data */
-function refresh() {
-	$("#list").fadeOut("fast", function() {
-		$(this).empty().append("<tr><td colspan=\"7\">Loading...</td></tr>").fadeIn("fast");
-	});
-
-	//Send data
-	var posting = $.post("action.php", {
-		refresh: "process",
-		type: "session"
-	});
-
-	//Put the results in the table
-	posting.done(function(data) {
-		$("#list").fadeOut("fast", function() {
-			$(this).empty().html(data).fadeIn("fast");
-
-			//We have to bind it again!
-			$(function() {
-				$("[data-toggle=\"tooltip\"]").tooltip();
-			});
-            
-            //We have to bind it again!
-			$("#startDate").datetimepicker({
-				format: 'Y-m-d H:i:s',
-				mask: true
-			});
-		});
-	});
-}
-
-/* Reload 'wait for' processes */
-function refreshWait() {
-	$("#wait").fadeOut("fast", function() {
-		$(this).empty().append("<option value=\"0\">Loading...</option>").fadeIn("fast");
-	});
-
-	//Send data
-	var posting = $.post("action.php", {
-		refresh: "process",
-		type: "waitFor"
-	});
-
-	//Put the results in the table
-	posting.done(function(data) {
-		$("#wait").fadeOut("fast", function() {
-			$(this).empty().html(data).fadeIn("fast");
-
-			//We have to bind it again!
-			$(function() {
-				$("[data-toggle=\"tooltip\"]").tooltip();
-			});
-            
-            //We have to bind it again!
-			$("#startDate").datetimepicker({
-				format: 'Y-m-d H:i:s',
-				mask: true
-			});
-
-		});
-	});
-}
-
-function processData(data) {
-	//Retuned message in div
-	$("#message").empty().append(data.message);
-	$("#message").removeClass("alert-danger alert-success").addClass(data.state);
-
-	//Show message, hide page
-	$("#page").fadeOut("slow", function() {
-		$("#message").fadeIn("slow", function() {
-			$("#message").delay(1000).fadeOut("slow", function() {
-				$("#page").fadeIn("slow");
-				refresh();
-				refreshWait();
-			});
-		});
-	});
-}
-
-$("#startDate").datetimepicker({
-	format: 'Y-m-d H:i:s',
-	mask: true
+    return false;
 });

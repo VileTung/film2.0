@@ -25,8 +25,11 @@ $session = $locker->getSession();
 //Call settings class
 $_settings = new settings();
 
-//Set sessionId settings.ini
+//Set sessionId in settings.ini
 $_settings->set("pSessionId", $session);
+
+//Set PID in settings.ini
+$_settings->set("pPID", getmypid());
 
 //Starts logging
 $logging = new loggen($log . $session);

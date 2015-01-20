@@ -49,7 +49,7 @@ DROP TABLE IF EXISTS `process`;
 CREATE TABLE `process` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pid` int(10) unsigned NOT NULL,
-  `wait` int(10) unsigned NOT NULL,
+  `wait` varchar(250) NOT NULL,
   `process` varchar(250) NOT NULL,
   `repeat` enum('true','false') NOT NULL DEFAULT 'false',
   `flow` enum('hour','day','week','month') NOT NULL DEFAULT 'week',
@@ -81,11 +81,12 @@ CREATE TABLE `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `settings` (`key`, `value`) VALUES
-('osCount',	'0'),
+('osCount',	'9'),
 ('osDateTime',	'1420801072'),
 ('osEnabled',	'true'),
-('pLastUpdate',	'1420801589'),
-('pSessionId',	'36853');
+('pLastUpdate',	'1420814063'),
+('pPID',	''),
+('pSessionId',	'58942');
 
 DROP TABLE IF EXISTS `subtitle`;
 CREATE TABLE `subtitle` (
@@ -109,4 +110,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2015-01-09 11:11:01
+-- 2015-01-13 15:28:10

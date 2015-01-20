@@ -6,6 +6,6 @@
  * @info Just a redirect
  */
 
-header("Location: ./../");
+header("Location: ./../../");
 
 ?>
