@@ -1,0 +1,46 @@
+<div class="col-md-12">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Process</th>
+                <th>PID</th>
+                <th>Wait</th>
+                <th>Repeat</th>
+                <th>Flow</th>
+                <th>Start</th>
+                <th>Stop</th>
+            </tr>
+        </thead>
+        <tbody id="list">
+            <loop:processes>
+                <tr>
+                    <td>
+                        <tag:processes[].id />
+                    </td>
+                    <td>
+                        <tag:processes[].process />
+                    </td>
+                    <td>
+                        <tag:processes[].pid />
+                    </td>
+                    <td>
+                        <tag:processes[].wait />
+                    </td>
+                    <td>
+                        <tag:processes[].repeat />
+                    </td>
+                    <td>
+                        <tag:processes[].flow />
+                    </td>
+                    <td>
+                        <tag:processes[].start />
+                    </td>
+                    <td>
+                        <a class="deleteProcess" data-id="<tag:processes[].id />" href="#">Delete</a>
+                    </td>
+                </tr>
+            </loop:processes>
+        </tbody>
+    </table>
+</div>

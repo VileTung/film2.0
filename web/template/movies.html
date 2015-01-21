@@ -1,0 +1,86 @@
+<loop:movies>
+	<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+		<div class="panel panel-default" data-toggle="modal" data-target="#info-<tag:movies[].imdb />" style="font-size: 0.8em;cursor:pointer;">
+			<div class="panel-heading" style="width: 100%">
+				<h6 class="panel-title fitText" title="<tag:movies[].title /> <tag:movies[].year />" style="font-size: 0.8em;"><tag:movies[].titleCutted /></h6>
+			</div>
+			<div class="panel-body" title="<tag:movies[].title /> (<tag:movies[].year />)" style="background: url('poster/<tag:movies[].imdb />.jpg') no-repeat center; height: 250px">
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="info-<tag:movies[].imdb />" tabindex="-1" role="dialog" aria-labelledby="label-<tag:movies[].imdb />" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="label-<tag:movies[].imdb />"><tag:movies[].title /> (<tag:movies[].year />)</h4>
+				</div>
+				<div class="modal-body">
+					<h6><tag:movies[].runtime /> min, <tag:movies[].rating />, <tag:movies[].genres /></h6>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							Subtitle(s) <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<loop:movies[].subtitles>
+								<li>
+									<a href="<tag:movies[].subtitles[].url />">
+										<tag:movies[].subtitles[].language />
+									</a>
+								</li>
+							</loop:movies[].subtitles>
+						</ul>
+					</div>
+					<p>
+						<tag:movies[].description />
+						<div class="row">
+							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+								<table class="table table-condensed" style="font-size: 0.7em">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Quality</th>
+											<th>Size</th>
+											<th>State</th>
+										</tr>
+									</thead>
+									<tbody>
+										<loop:movies[].torrents>
+											<tr>
+												<td><a href="<tag:movies[].torrents[].url />" title="Get Magnetlink">Get</a>
+												</td>
+												<td>
+													<tag:movies[].torrents[].quality />
+												</td>
+												<td>
+													<tag:movies[].torrents[].size />
+												</td>
+												<td>
+													<span data-toggle="tooltip" data-placement="auto" data-html="true" data-title="<tag:movies[].torrents[].availability />"><tag:movies[].torrents[].state /></span>
+												</td>
+											</tr>
+										</loop:movies[].torrents>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</loop:movies>
+<if:loadMore>
+<div id="append">
+    <ul class="pager">
+        <li>
+			<a id="loadMore" href="#">Load more...</a>
+		</li>
+	</ul>
+</div>
+</if:loadMore>

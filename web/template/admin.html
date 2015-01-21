@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Film2.0 - Just watch!</title>
+	<!-- Favicon -->
+	<link rel="icon" href="web/images/icon.png" />
+	<!-- Bootstrap -->
+	<link href="web/css/bootstrap.min.css" rel="stylesheet" />
+	<!-- Mobile table view -->
+	<link href="web/css/table.min.css" rel="stylesheet">
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+
+<body>
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a id="home" class="navbar-brand" href="index.php">Home</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a id="admin" href="admin.php">Admin</a>
+					</li>
+				</ul>
+			</div>
+			<!--/.nav-collapse -->
+		</div>
+	</nav>
+	<div class="container theme-showcase" role="main" style="padding:40px;">
+		<div class="page-header">
+			<h1>Film2.0 - Administration!</h1>
+		</div>
+		
+		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Confirm Stop/Kill</h4>
+					</div>
+					<div class="modal-body">
+						<p>You are about to stop or kill this session, this procedure is irreversible.</p>
+						<p>Stop is a friendly way of stopping this session, while kill is not so friendly.</p>
+						<p>Do you want to proceed?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<a href="#" class="btn btn-warning warning">Stop</a>
+						<a href="#" class="btn btn-danger danger">Kill</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="jumbotron">
+			<div id="message" class="alert" style="display: none;" role="alert">
+				Default text
+			</div>
+
+			<div id="masterProcess"><!-- Loading master process state... --></div>
+
+			<div id="showPlus" style="cursor: pointer;">
+                <span id="plusClick" class="glyphicon glyphicon-plus"></span>
+			</div>
+            <div id="showMinus" style="cursor: pointer; display: none;">
+                <span id="minusClick" class="glyphicon glyphicon-minus"></span>
+			</div>            
+			<div id="showAdd" style="display: none;"><!-- Loading add process data... --></div>
+			
+			<div id="sessionList"><!-- Loading session list --></div>
+			
+			<div id="processList"><!-- Loading process list --></div>
+			
+			<span style="text-align: center; font-style: oblique;">Version 1.X</span>
+
+		</div>
+	</div>
+</body>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="web/js/jquery-1.11.2.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="web/js/bootstrap.min.js"></script>
+<!-- AJaX calls -->
+<script src="web/js/admin.js"></script>
+
+</html>

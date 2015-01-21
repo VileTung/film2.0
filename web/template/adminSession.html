@@ -1,0 +1,48 @@
+<div class="col-md-12">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Session</th>
+                <th>State</th>
+                <th>Progress</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Log</th>
+                <th>Kill</th>
+            </tr>
+        </thead>
+        <tbody id="list">
+            <loop:sessions>
+                <tr id="sessionRow<tag:sessions[].sessionId />">
+                    <td>
+                        <tag:sessions[].process />
+                    </td>
+                    <td>
+                        <span style="color: <tag:sessions[].active />"><tag:sessions[].state /></span>
+                    </td>
+                    <td>
+                        <div class="progress" style="margin-bottom: 0px;">
+                            <div data-toggle="tooltip" title="Complete: <tag:sessions[].progress />%" style="width: <tag:sessions[].progress />%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="<tag:sessions[].progress />" role="progressbar" class="progress-bar <tag:sessions[].class />"><span class="sr-only"><tag:sessions[].progress />% complete</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <tag:sessions[].start />
+                    </td>
+                    <td>
+                        <tag:sessions[].end />
+                    </td>
+                    <td><a target="_blank" href="log/<tag:sessions[].sessionId />.html">Click</a>
+                    </td>
+                    <td>
+                        <if:working>
+                            <a data-pid="<tag:sessions[].pid />" data-session="<tag:sessions[].sessionId />" data-toggle="modal" data-target="#confirm-delete" href="#">Stop</a>
+						<else:working>
+							<a data-session="<tag:sessions[].sessionId />" href="#" class="removeProcess">Remove</a>
+                        </if:working>
+                    </td>
+                </tr>
+            </loop:sessions>
+        </tbody>
+    </table>
+</div>
