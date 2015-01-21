@@ -4,8 +4,8 @@ cache/process
 cache/[0-9]*
 
 #Log
-*.txt
-*.html
+log/*.txt
+log/*.html
 
 #Poster
 *.jpg
