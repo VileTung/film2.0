@@ -151,8 +151,18 @@ $(document).on("click", "#loadMore", function()
 /* Sort or genre click */
 $(document).on("click", ".sort, .genre", function()
 {
-    /* Hide/close the dropdown menu*/
-    $(".dropdown.open .dropdown-toggle").dropdown("toggle");
+    /* Only in mobile view*/
+    if ($(document).width() < 751)
+    {
+        /* Hide/close the navbar menu*/
+        $(".navbar-toggle").click();
+    }
+    /* Normal view */
+    else
+    {
+        /* Hide/close the dropdown menu*/
+        $(".dropdown.open .dropdown-toggle").dropdown("toggle");
+    }
 
     /* Sort or genre */
     var type = $(this).attr("class");
