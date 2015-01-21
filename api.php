@@ -19,9 +19,11 @@ if (count($_POST) > 0)
         $_getMovies = new getMovies();
 
         //Begin
-        if (isset($_POST["begin"]) && is_numeric($_POST["begin"]))
+        if (isset($_POST["page"]) && is_numeric($_POST["page"]))
         {
-            $_getMovies->__set("begin", $_POST["begin"]);
+            $begin = ($_POST["page"] - 1) * 30;
+
+            $_getMovies->__set("begin", $begin);
         }
         else
         {
@@ -29,14 +31,7 @@ if (count($_POST) > 0)
         }
 
         //Limit
-        if (isset($_POST["limit"]) && is_numeric($_POST["limit"]))
-        {
-            $_getMovies->__set("limit", $_POST["limit"]);
-        }
-        else
-        {
-            $_getMovies->__set("limit", 50);
-        }
+        $_getMovies->__set("limit", 30);
 
         //By
         if (isset($_POST["by"]) && $_POST["by"] != "")
