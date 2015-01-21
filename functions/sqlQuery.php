@@ -24,7 +24,7 @@ function Database($connect = true)
     $GLOBALS["MySQLi"] = $MySQLi;
 }
 
-function sqlQueryi($query, $parameters = false, $result = false, $useCache = false)
+function sqlQueryi($query, $parameters = false, $result = false, $useCache = false, $buildCache = false)
 {
     global $MySQLi, $cache, $cacheExpire;
 
@@ -103,8 +103,11 @@ function sqlQueryi($query, $parameters = false, $result = false, $useCache = fal
             $return[] = $data;
         }
 
+        //Call settings class
+        $_settings = new settings();
+
         //Cache
-        if ($useCache)
+        if (($useCache && !$_settings->get("buildCache")) || $buildCache)
         {
             //Data
             $data = array($result->num_rows, $return);
