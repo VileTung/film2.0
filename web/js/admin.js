@@ -103,8 +103,30 @@ function postDataJSON(post)
         }, "json");
 }
 
-/* Load default page (movies) */
+/* Load default admin page */
 $(document).ready(function()
+{
+    /* Get master process state */
+    postDataHTML("#masterProcess",
+    {
+        "type": "adminState"
+    }, true, false);
+
+    /* Get session list */
+    postDataHTML("#sessionList",
+    {
+        "type": "adminSessions"
+    }, true, false);
+
+    /* Get process list */
+    postDataHTML("#processList",
+    {
+        "type": "adminProcesses"
+    }, true, false);
+});
+
+/* Refresh default admin page */
+$(document).on("click", "#admin", function()
 {
     /* Get master process state */
     postDataHTML("#masterProcess",
