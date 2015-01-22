@@ -145,6 +145,8 @@ $(document).on("click", "#admin", function()
     {
         "type": "adminProcesses"
     }, true, false);
+	
+	return false;
 });
 
 /* Start/stop master process */
