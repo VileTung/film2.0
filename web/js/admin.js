@@ -111,6 +111,12 @@ $(document).ready(function()
     {
         "type": "adminState"
     }, true, false);
+	
+	/* Get buildCache state */
+    postDataHTML("#buildCache",
+    {
+        "type": "adminBuildCacheState"
+    }, true, false);
 
     /* Get session list */
     postDataHTML("#sessionList",
@@ -133,6 +139,30 @@ $(document).on("click", "#admin", function()
     {
         "type": "adminState"
     }, true, false);
+	
+	/* Get buildCache state */
+    postDataHTML("#buildCache",
+    {
+        "type": "adminBuildCacheState"
+    }, true, false);
+
+    /* Get add process data */
+    if ($("#showMinus").is(":visible"))
+    {
+		/* Nice refreshing */
+        postDataHTML("#showAdd",
+        {
+            "type": "adminProcessForm"
+        }, true, false);
+    }
+    else
+    {
+		/* Simple, no fade-in or out */
+        postDataHTML("#showAdd",
+        {
+            "type": "adminProcessForm"
+        }, false, false);
+    }
 
     /* Get session list */
     postDataHTML("#sessionList",
@@ -145,8 +175,8 @@ $(document).on("click", "#admin", function()
     {
         "type": "adminProcesses"
     }, true, false);
-	
-	return false;
+
+    return false;
 });
 
 /* Start/stop master process */
@@ -278,41 +308,41 @@ $(document).on("click", ".removeProcess", function()
 });
 
 /* Stop an active session */
-$(document).on("click", ".warning", function() 
+$(document).on("click", ".warning", function()
 {
-	/*Get sessionId */
-	var sessionId = $(this).attr("data-session");
+    /*Get sessionId */
+    var sessionId = $(this).attr("data-session");
 
-	/* Get data */
+    /* Get data */
     postDataJSON(
     {
         "type": "adminStopSession",
         "id": sessionId
     });
 
-	/* Close modalbox*/
-	$("#confirm-delete").modal("toggle");
+    /* Close modalbox*/
+    $("#confirm-delete").modal("toggle");
 
-	return false;
+    return false;
 });
 
 /* Kill an active (or dead) session */
-$(document).on("click", ".danger", function() 
+$(document).on("click", ".danger", function()
 {
-	/*Get PID */
-	var pid = $(this).attr("data-pid");
+    /*Get PID */
+    var pid = $(this).attr("data-pid");
 
-	/* Get data */
+    /* Get data */
     postDataJSON(
     {
         "type": "adminKillSession",
         "id": pid
     });
 
-	/* Close modalbox*/
-	$("#confirm-delete").modal("toggle");
+    /* Close modalbox*/
+    $("#confirm-delete").modal("toggle");
 
-	return false;
+    return false;
 });
 
 /* Delete a process */
@@ -326,6 +356,18 @@ $(document).on("click", ".deleteProcess", function()
     {
         "type": "adminRemoveProcess",
         "id": id
+    });
+
+    return false;
+});
+
+/* Remove buildCache lock */
+$(document).on("click", "#cacheLock", function()
+{
+    /* Get data */
+    postDataJSON(
+    {
+        "type": "adminRemoveCacheLock"
     });
 
     return false;

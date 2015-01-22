@@ -73,6 +73,17 @@ if (count($_POST) > 0)
                 //Print
                 print (json_encode(array("state" => $state, "message" => $message)));
             }
+            //Admin - Remove buildCache lock
+            elseif ($_POST["type"] == "adminRemoveCacheLock")
+            {
+                $_settings = new settings();
+
+                //Settings, remove buildCache lock
+                $_settings->set("buildCache", false);
+
+                //Print
+                print (json_encode(array("state" => "alert alert-success", "message" => "BuildCache lock has been removed!")));
+            }
         }
         //HTML
         elseif ($_POST["return"] == "html")
@@ -111,6 +122,16 @@ if (count($_POST) > 0)
                 $bTemplate->set("process", $_ajaxAction->adminState());
 
                 print ($bTemplate->fetch("template/adminState.html"));
+
+            }
+            //Admin - Master process state
+            elseif ($_POST["type"] == "adminBuildCacheState")
+            {
+                $bTemplate = new bTemplate();
+
+                $bTemplate->set("buildCache", $_ajaxAction->adminBuildCacheState());
+
+                print ($bTemplate->fetch("template/adminBuildCacheState.html"));
 
             }
             //Admin - Add process form
@@ -450,6 +471,22 @@ class ajaxAction
         return $process;
     }
 
+    //Get data for the admin page, buidCache state
+    public function adminBuildCacheState()
+    {
+        //Get process last update from settings
+        $_settings = new settings();
+
+        if ($_settings->get("buildCache"))
+        {
+            return array("class" => "danger", "state" => "Working!");
+        }
+        else
+        {
+            return array("class" => "success", "state" => "Stopped!");
+        }
+    }
+
     //Start/stop the master process
     public function adminMasterProcess()
     {
@@ -596,10 +633,19 @@ class ajaxAction
         //Legal?
         $legal = false;
 
+        //YTS
         if ($data["process"] == "yts" && isset($data["begin"]) && isset($data["end"]))
         {
             //Command
             $cmd = "cd " . $root . " && ./run.php YTS " . $data["begin"] . " " . $data["end"];
+
+            $legal = true;
+        }
+        //buildCache
+        elseif ($data["process"] == "buildCache")
+        {
+            //Command
+            $cmd = "cd " . $root . " && ./run.php buildCache";
 
             $legal = true;
         }
