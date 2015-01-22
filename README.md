@@ -11,7 +11,7 @@ _How do I, as a developer, start working on the project?_
 
 ### Important note
 
-_Make sure that the following folders are a member of the server-process. To find out what the server-process name is use this `var_dump(shell_exec("whoami"));` code in a php file and execute it in the browser._
+_Make sure that the following folders are a member of the server-process. To find out what the server-process name is use this `var_dump(shell_exec("whoami"));` code in a php file and execute it in the browser. Then use in a command line use: `chown -R www-data:www-data` and replace 'www-data' with the user._
 
 > - cache
 > - log
