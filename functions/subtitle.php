@@ -35,6 +35,13 @@ class subtitle
         fwrite($file, $content);
         fclose($file);
 
+        //Check if file exists
+        if (!file_exists($cache . $this->imdb . ".zip"))
+        {
+            //Error, file doesn't exist
+            throw new Exception("No file to extract (" . $this->imdb . " - " . $language . " - " . $cache . $this->imdb . ".zip - " . $url . ")");
+        }
+
         //Unzip
         $zip = new ZipArchive;
         $extract = $zip->open($cache . $this->imdb . ".zip");
@@ -58,6 +65,7 @@ class subtitle
             //Error
             throw new Exception("Subtitle extraction failed! (" . $this->imdb . " - " . $language . " - " . $cache . $this->imdb . ".zip)");
         }
+
 
         //Move to subtitle dir
         self::scanSubtitle($cache . $this->imdb, $language);
