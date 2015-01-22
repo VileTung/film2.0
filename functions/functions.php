@@ -57,6 +57,7 @@ require_once ($functions . "settings.php");
 require_once ($functions . "sqlQuery.php");
 require_once ($functions . "subtitle.php");
 require_once ($functions . "torrent.php");
+require_once ($functions . "version.php");
 
 //Load web-related functions
 require_once ($web . "bTemplate.php");

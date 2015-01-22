@@ -11,6 +11,10 @@ require_once ("functions/functions.php");
 //Template
 $bTemplate = new bTemplate();
 
+//Version number
+$_version = new version();
+$bTemplate->set("version", $_version->display());
+
 print ($bTemplate->fetch($web . "template/index.html"));
 
 ?>
