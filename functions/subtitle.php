@@ -66,7 +66,6 @@ class subtitle
             throw new Exception("Subtitle extraction failed! (" . $this->imdb . " - " . $language . " - " . $cache . $this->imdb . ".zip)");
         }
 
-
         //Move to subtitle dir
         self::scanSubtitle($cache . $this->imdb, $language);
 
