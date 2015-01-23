@@ -134,6 +134,13 @@ $(document).ready(function()
 /* Refresh default admin page */
 $(document).on("click", "#admin", function()
 {
+	/* Only in mobile view*/
+    if ($(document).width() < 751)
+    {
+        /* Hide/close the navbar menu*/
+        $(".navbar-toggle").click();
+    }
+	
     /* Get master process state */
     postDataHTML("#masterProcess",
     {
@@ -364,6 +371,13 @@ $(document).on("click", ".deleteProcess", function()
 /* Remove buildCache lock */
 $(document).on("click", "#cacheLock", function()
 {
+	/* Only in mobile view*/
+    if ($(document).width() < 751)
+    {
+        /* Hide/close the navbar menu*/
+        $(".navbar-toggle").click();
+    }
+	
     /* Get data */
     postDataJSON(
     {
