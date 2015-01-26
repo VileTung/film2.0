@@ -453,6 +453,11 @@ class getMovies
     //Get all possibilities from array
     private function combinations($arrays, $i = 0)
     {
+        global $locker;
+        
+        //Check
+        $locker->check();
+        
         //Check if possible
         if (!isset($arrays[$i]))
         {
