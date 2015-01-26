@@ -434,7 +434,7 @@ class getMovies
         self::__set("buildCache", true);
 
         //Page looping
-        for ($i = 0; $i <= 11; $i++)
+        for ($i = 0; $i <= 5; $i++)
         {
             self::__set("begin", ($i * 30));
 
