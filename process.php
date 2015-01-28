@@ -39,7 +39,7 @@ try
     while (true)
     {
         //Get movies
-        list($rows, $result) = sqlQueryi("SELECT *, UNIX_TIMESTAMP(`start`) AS `startDate` FROM `process` WHERE NOW() > `start`", false, true); //SELECT *, UNIX_TIMESTAMP(`start`) AS `startDate` FROM `process` WHERE NOW() > `start` AND `wait` NOT IN(SELECT `id` FROM `process`)
+        list($rows, $result) = sqlQueryi("SELECT * FROM `process` WHERE NOW() > `start`", false, true); //SELECT *, UNIX_TIMESTAMP(`start`) AS `startDate` FROM `process` WHERE NOW() > `start` AND `wait` NOT IN(SELECT `id` FROM `process`)
 
         if ($rows > 0)
         {
@@ -70,16 +70,16 @@ try
                             switch ($fetch["flow"])
                             {
                                 case "hour":
-                                    $newDate = $fetch["startDate"] + (3600);
+                                    $newDate = time() + (3600);
                                     break;
                                 case "day":
-                                    $newDate = $fetch["startDate"] + (3600 * 24);
+                                    $newDate = time() + (3600 * 24);
                                     break;
                                 case "week":
-                                    $newDate = $fetch["startDate"] + (3600 * 24 * 7);
+                                    $newDate = time() + (3600 * 24 * 7);
                                     break;
                                 case "month":
-                                    $newDate = $fetch["startDate"] + (3600 * 24 * 7 * 4);
+                                    $newDate = time() + (3600 * 24 * 7 * 4);
                                     break;
                             }
 
