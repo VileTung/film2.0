@@ -39,7 +39,7 @@ try
     while (true)
     {
         //Get movies
-        list($rows, $result) = sqlQueryi("SELECT * FROM `process` WHERE NOW() > `start`", false, true); //SELECT *, UNIX_TIMESTAMP(`start`) AS `startDate` FROM `process` WHERE NOW() > `start` AND `wait` NOT IN(SELECT `id` FROM `process`)
+        list($rows, $result) = sqlQueryi("SELECT * FROM `process` WHERE NOW() > `start`", false, true);
 
         if ($rows > 0)
         {
