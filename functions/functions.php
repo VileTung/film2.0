@@ -18,7 +18,7 @@ $guzzle = "/home/Guzzle/vendor/autoload.php";
 //We need Guzzle/cURL
 if (!function_exists("curl_init") && !file_exists($guzzle))
 {
-    die("cURL en/of Guzzle zijn niet geïnstalleerd(!!)");
+    die("cURL and/or Guzzle are not installed(!!)");
 }
 
 //Load Guzzle
@@ -40,9 +40,6 @@ $poster = $root . "poster/";
 $scraper = $root . "scraper/";
 $subtitle = $root . "subtitle/";
 $web = $root . "web/";
-
-//Additional files
-$cacheExpire = $functions . "cache";
 
 //Load additional functions
 require_once ($functions . "cache.php");
@@ -67,6 +64,10 @@ require_once ($web . "data.php");
 require_once ($scraper . "openSubtitles.php");
 require_once ($scraper . "scraper.php");
 require_once ($scraper . "yts.php");
+
+//Get cacheId
+$_settings = new settings();
+$cacheSession = $cache . $_settings->get("cacheId") . "/";
 
 //Guzzle client
 $client = new Client();

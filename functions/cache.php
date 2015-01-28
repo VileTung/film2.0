@@ -18,9 +18,9 @@ class cache
     private $cli;
 
     //Check if cached and cache is valid
-    public function __construct($id = false, $expireFile = false, $cli = true)
+    public function __construct($id = false, $cli = true)
     {
-        global $logging, $cache, $cacheExpire;
+        global $logging, $cache;
 
         //No valid ID
         if (!$id || empty($id))
@@ -34,7 +34,7 @@ class cache
             $now = time();
 
             //Must not be older than one month
-            if ((!$expireFile && $future > $now) || ($expireFile && filemtime($cache . $id) > filemtime($cacheExpire)))
+            if ($future > $now)
             {
                 $this->cached = true;
 

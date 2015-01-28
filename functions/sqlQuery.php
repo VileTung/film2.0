@@ -26,7 +26,7 @@ function Database($connect = true)
 
 function sqlQueryi($query, $parameters = false, $result = false, $useCache = false, $buildCache = false)
 {
-    global $MySQLi, $cache, $cacheExpire;
+    global $MySQLi, $cache, $cacheSession;
 
     //Strip duplicated and unnecessary spaces
     $query = preg_replace("~(?:\"[^\"]++\"|'[^']++'|`[^`]++`)(*SKIP)(*F)|\s{1,}~i", " ", $query);
@@ -37,10 +37,10 @@ function sqlQueryi($query, $parameters = false, $result = false, $useCache = fal
     if ($useCache && $result)
     {
         //Check if we have cache
-        if (file_exists($cache . "sql_" . $md5Query) && filemtime($cache . "sql_" . $md5Query) > filemtime($cacheExpire))
+        if (file_exists($cacheSession . "sql_" . $md5Query))
         {
             //Valid cache, read it
-            $data = unserialize(file_get_contents($cache . "sql_" . $md5Query));
+            $data = unserialize(file_get_contents($cacheSession . "sql_" . $md5Query));
 
             //Return and quit this function
             return array($data[0], $data[1]);
@@ -103,7 +103,7 @@ function sqlQueryi($query, $parameters = false, $result = false, $useCache = fal
             $return[] = $data;
         }
 
-        //Call settings class
+        //Settings class
         $_settings = new settings();
 
         //Cache
@@ -113,7 +113,7 @@ function sqlQueryi($query, $parameters = false, $result = false, $useCache = fal
             $data = array($result->num_rows, $return);
 
             //Save
-            file_put_contents($cache . "sql_" . $md5Query, serialize($data), LOCK_EX);
+            file_put_contents(($buildCache ? $cache . $buildCache . "/" : $cacheSession) . "sql_" . $md5Query, serialize($data), LOCK_EX);
         }
 
         //Return

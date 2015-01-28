@@ -59,7 +59,7 @@ class locker
     //Check if session.lock still exists, otherwise, exit!
     public function check()
     {
-        global $logging, $cache, $cacheExpire;
+        global $logging, $cache;
 
         if (!file_exists($cache . "lock_" . $this->session))
         {
@@ -69,18 +69,6 @@ class locker
                 "Aborted",
                 date("Y-m-d H:i:s"),
                 $this->session));
-
-            //Mark cache as 'old'
-            if (!touch($cacheExpire))
-            {
-                //Message
-                $logging->error("Failed to mark cache as old (" . $this->session . ")");
-            }
-            else
-            {
-                //Message
-                $logging->info("Marked cache as old (" . $this->session . ")");
-            }
 
             throw new Exception("Stopping, " . $this->session . ".lock doesn't exist");
         }
@@ -94,31 +82,9 @@ class locker
     //Regular exit
     public function stop($buildCache = false)
     {
-        global $logging, $cache, $cacheExpire;
+        global $logging, $cache;
 
         unlink($cache . "lock_" . $this->session);
-
-        //Only mark as old when we are not building the cache
-        if (!$buildCache)
-        {
-            //Mark cache as 'old'
-            if (!touch($cacheExpire))
-            {
-                //Message
-                $logging->error("Failed to mark cache as old (" . $this->session . ")");
-            }
-            else
-            {
-                //Message
-                $logging->info("Marked cache as old (" . $this->session . ")");
-            }
-        }
-        //Build cache
-        else
-        {
-            //Message
-            $logging->info("Not marked as old, we're building cache (" . $this->session . ")");
-        }
 
         //Update state
         sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `sessionId` = ?", array(

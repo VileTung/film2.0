@@ -130,8 +130,7 @@ class getMovies
     private function getGenres($imdb)
     {
         //Get all genres
-        list($count, $result) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->
-            buildCache);
+        list($count, $result) = sqlQueryi("SELECT `genre` FROM `genres` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->buildCache);
 
         if ($count > 0)
         {
@@ -147,8 +146,7 @@ class getMovies
     private function getTorrents($imdb)
     {
         //Get all torrents
-        list($count, $result) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->
-            buildCache);
+        list($count, $result) = sqlQueryi("SELECT * FROM `data` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->buildCache);
 
         foreach ($result as $key => $fetch)
         {
@@ -170,8 +168,7 @@ class getMovies
     private function getTrackers($hash)
     {
         //Get all trackers
-        list($count, $result) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s", $hash), true, true, $this->
-            buildCache);
+        list($count, $result) = sqlQueryi("SELECT * FROM `trackers` WHERE `hash` = ?", array("s", $hash), true, true, $this->buildCache);
 
         if ($count > 0)
         {
@@ -187,8 +184,7 @@ class getMovies
     private function getSubtitles($imdb)
     {
         //Get all subtitles
-        list($count, $result) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->
-            buildCache);
+        list($count, $result) = sqlQueryi("SELECT * FROM `subtitle` WHERE `imdb` = ?", array("s", $imdb), true, true, $this->buildCache);
 
         if ($count > 0)
         {
@@ -282,7 +278,7 @@ class getMovies
     //Set the settings for pre-build cache
     public function setCache()
     {
-        global $logging, $locker;
+        global $logging, $locker, $cache;
 
         //Sorting
         $sort = array(
@@ -327,6 +323,30 @@ class getMovies
         //Message
         $logging->info("Locker check");
         $locker->check();
+
+        //New cacheId
+        $this->buildCache = time();
+
+        //Create new cache folder
+        if (!mkdir($cache . $this->buildCache))
+        {
+            throw new Exception("Couldn't create a cacheId folder (" . $cache . $this->buildCache . ")!");
+        }
+
+        //Settings class
+        $_settings = new settings();
+
+        //Set owner
+        if (!chown($cache . $this->buildCache, $_settings->get("cacheUser")))
+        {
+            throw new Exception("Couldn't set owner (" . $cache . $this->buildCache . ")!");
+        }
+
+        //Set group
+        if (!chgrp($cache . $this->buildCache, $_settings->get("cacheGroup")))
+        {
+            throw new Exception("Couldn't set group (" . $cache . $this->buildCache . ")!");
+        }
 
         //Message
         $logging->info("Cache index page");
@@ -397,11 +417,19 @@ class getMovies
                 $locker->update(($progress / $total) * 100);
             }
         }
+
+        //Set new cacheId
+        $_settings->set("cacheId", $this->buildCache);
     }
 
     //Build cache
     private function buildCache($by, $genre, $sort)
     {
+        global $locker;
+
+        //Check
+        $locker->check();
+
         //Call settings class
         $_settings = new settings();
 
@@ -427,20 +455,19 @@ class getMovies
         $_settings->set("buildCache", true);
 
         //Default values
-        self::__set("limit", 30);
-        self::__set("qTitle", "");
-        self::__set("titleCut", false);
-        self::__set("titleLength", 1);
-        self::__set("buildCache", true);
+        $this->limit = 30;
+        $this->qTitle = "";
+        $this->titleCut = false;
+        $this->titleLength = 1;
 
         //Page looping
         for ($i = 0; $i <= 5; $i++)
         {
-            self::__set("begin", ($i * 30));
+            $this->begin = ($i * 30);
 
-            self::__set("qBy", $by);
-            self::__set("qGenre", $genre);
-            self::__set("qSort", $sort);
+            $this->qBy = $by;
+            $this->qGenre = $genre;
+            $this->qSort = $sort;
 
             //Movie and other data
             $data = self::data();
@@ -453,11 +480,6 @@ class getMovies
     //Get all possibilities from array
     private function combinations($arrays, $i = 0)
     {
-        global $locker;
-        
-        //Check
-        $locker->check();
-        
         //Check if possible
         if (!isset($arrays[$i]))
         {

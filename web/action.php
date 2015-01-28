@@ -547,15 +547,12 @@ class ajaxAction
     //Stop an active session
     public function stopSession($data)
     {
-        global $cache, $cacheExpire;
+        global $cache;
 
         //Delete lock file
         if (file_exists($cache . "lock_" . $data["id"]))
         {
             unlink($cache . "lock_" . $data["id"]);
-
-            //Mark cache as 'old'
-            touch($cacheExpire);
 
             //Return
             return array("alert alert-success", "Successfully stopped the process (" . $data["id"] . ")!");
@@ -570,7 +567,7 @@ class ajaxAction
     //Kill an active (or dead) session
     public function killSession($data)
     {
-        global $cache, $cacheExpire;
+        global $cache;
 
         //Make the connection
         Database();
@@ -580,9 +577,6 @@ class ajaxAction
         {
             unlink($cache . "lock_" . $data["id"]);
         }
-
-        //Mark cache as 'old'
-        touch($cacheExpire);
 
         //Update state
         sqlQueryi("UPDATE `sessions` SET `state` = ?, `end` = ? WHERE `pid` = ?", array(

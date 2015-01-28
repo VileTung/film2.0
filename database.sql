@@ -81,13 +81,16 @@ CREATE TABLE `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `settings` (`key`, `value`) VALUES
-('buildCache',	'false'),
+('buildCache',	'true'),
+('cacheGroup',	'www-data'),
+('cacheId',	'20150128132020'),
+('cacheUser',	'www-data'),
 ('osCount',	'19'),
 ('osDateTime',	'1421162942'),
 ('osEnabled',	'true'),
-('pLastUpdate',	'1421761319'),
-('pPID',	'26116'),
-('pSessionId',	'14839');
+('pLastUpdate',	'1422446845'),
+('pPID',	'4545'),
+('pSessionId',	'18059');
 
 DROP TABLE IF EXISTS `subtitle`;
 CREATE TABLE `subtitle` (
@@ -111,4 +114,4 @@ CREATE TABLE `trackers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2015-01-21 10:58:26
+-- 2015-01-28 12:33:53
