@@ -245,9 +245,6 @@ $(document).on("submit", "#search", function(event)
     /* Set title, for searching */
     iTitle = $(this).find("input[name='title']").val();
 
-    /* Reset form */
-    $("#search").trigger("reset");
-
     /* Reset page count */
     iCount = 0;
 

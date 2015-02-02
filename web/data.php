@@ -223,7 +223,7 @@ class getMovies
         //SQL parameters
         if (count($this->parameter) > 0 && $this->parameter[0] != "")
         {
-            $parameters = array($this->parameter[0], $this->parameter[1]);
+            $parameters = $this->parameter;
         }
         else
         {
